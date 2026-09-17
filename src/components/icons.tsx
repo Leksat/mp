@@ -42,6 +42,34 @@ export const CardIcon = ({ size }: IconProps) => (
   </Svg>
 )
 
+export const GearIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <circle cx="12" cy="12" r="3.2" />
+    <path d="M12 2.5l1.6 2.6 3-.5.6 3 2.7 1.4-1.4 2.7 1.4 2.7-2.7 1.4-.6 3-3-.5L12 21.5l-1.6-2.6-3 .5-.6-3-2.7-1.4L5.5 12 4.1 9.3l2.7-1.4.6-3 3 .5z" />
+  </Svg>
+)
+
+export const LayoutTopIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <rect x="3" y="3" width="18" height="18" rx="3" />
+    <rect x="6.5" y="6.5" width="11" height="4" rx="1.5" fill="currentColor" />
+  </Svg>
+)
+
+export const LayoutBottomIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <rect x="3" y="3" width="18" height="18" rx="3" />
+    <rect x="6.5" y="13.5" width="11" height="4" rx="1.5" fill="currentColor" />
+  </Svg>
+)
+
+export const TrashIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <path d="M4 7h16M10 4h4M6 7l1 13h10l1-13" />
+    <path d="M10 11v6M14 11v6" />
+  </Svg>
+)
+
 export const ResetIcon = ({ size }: IconProps) => (
   <Svg size={size}>
     <path d="M20 12a8 8 0 11-2.3-5.6" />

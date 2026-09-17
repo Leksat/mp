@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { FactSheet } from '../components/FactSheet'
 import { ALL_FACTS, FACTORS, toFact, type Fact } from '../domain/facts'
-import { factState, learnedCount, type Progress } from '../domain/progress'
+import { factState, factStreak, learnedCount, type Progress } from '../domain/progress'
 
 interface GridScreenProps {
   readonly progress: Progress
   onForget(fact: Fact): void
 }
+
+const cellTone = (progress: Progress, fact: Fact): string =>
+  factState(progress, fact) === 'untouched' ? 'untouched' : `streak-${factStreak(progress, fact)}`
 
 export const GridScreen = ({ progress, onForget }: GridScreenProps) => {
   const [selected, setSelected] = useState<Fact | null>(null)
@@ -36,7 +39,7 @@ export const GridScreen = ({ progress, onForget }: GridScreenProps) => {
               <button
                 type="button"
                 key={`cell-${row}-${column}`}
-                className={`cell ${factState(progress, fact)}`}
+                className={`cell ${cellTone(progress, fact)}`}
                 onClick={() => setSelected(fact)}
                 aria-label={`${row} × ${column}`}
               >

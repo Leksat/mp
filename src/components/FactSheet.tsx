@@ -1,5 +1,5 @@
 import { product, type Fact } from '../domain/facts'
-import { factProgress, LEARNED_STREAK, type Progress } from '../domain/progress'
+import { factStreak, LEARNED_STREAK, type Progress } from '../domain/progress'
 import { CrossIcon, ResetIcon } from './icons'
 
 interface FactSheetProps {
@@ -10,7 +10,7 @@ interface FactSheetProps {
 }
 
 export const FactSheet = ({ fact, progress, onForget, onClose }: FactSheetProps) => {
-  const streak = Math.min(factProgress(progress, fact)?.streak ?? 0, LEARNED_STREAK)
+  const streak = factStreak(progress, fact)
 
   return (
     <div className="sheet-backdrop" onClick={onClose}>

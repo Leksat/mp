@@ -1,6 +1,19 @@
-import { CardIcon, GridIcon } from './icons'
+import type { ComponentType } from 'react'
+import { CardIcon, GearIcon, GridIcon } from './icons'
 
-export type Screen = 'cards' | 'grid'
+export type Screen = 'cards' | 'grid' | 'settings'
+
+interface Tab {
+  readonly screen: Screen
+  readonly label: string
+  readonly Icon: ComponentType<{ readonly size?: number }>
+}
+
+const TABS: readonly Tab[] = [
+  { screen: 'cards', label: 'cards', Icon: CardIcon },
+  { screen: 'grid', label: 'table', Icon: GridIcon },
+  { screen: 'settings', label: 'settings', Icon: GearIcon },
+]
 
 interface TabBarProps {
   readonly screen: Screen
@@ -9,21 +22,16 @@ interface TabBarProps {
 
 export const TabBar = ({ screen, onSelect }: TabBarProps) => (
   <nav className="tabbar">
-    <button
-      type="button"
-      className={`tab ${screen === 'cards' ? 'active' : ''}`}
-      onClick={() => onSelect('cards')}
-      aria-label="cards"
-    >
-      <CardIcon size={26} />
-    </button>
-    <button
-      type="button"
-      className={`tab ${screen === 'grid' ? 'active' : ''}`}
-      onClick={() => onSelect('grid')}
-      aria-label="table"
-    >
-      <GridIcon size={26} />
-    </button>
+    {TABS.map(({ screen: target, label, Icon }) => (
+      <button
+        key={target}
+        type="button"
+        className={`tab ${screen === target ? 'active' : ''}`}
+        onClick={() => onSelect(target)}
+        aria-label={label}
+      >
+        <Icon size={26} />
+      </button>
+    ))}
   </nav>
 )

@@ -30,6 +30,9 @@ export const factState = (progress: Progress, fact: Fact): FactState => {
 export const isLearned = (progress: Progress, fact: Fact): boolean =>
   factState(progress, fact) === 'learned'
 
+export const factStreak = (progress: Progress, fact: Fact): number =>
+  Math.min(factProgress(progress, fact)?.streak ?? 0, LEARNED_STREAK)
+
 export const learnedCount = (progress: Progress): number =>
   ALL_FACTS.filter((fact) => isLearned(progress, fact)).length
 

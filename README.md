@@ -14,10 +14,12 @@ A parent holds the phone, the kid says the answer aloud.
   buttons are live from the moment the card appears.
 - Card selection is weighted: recently missed facts come back sooner, roughly every fifth card is
   a learned fact due for review, and no fact repeats within 5 cards.
-- The table screen colours every cell grey (untouched), amber (learning) or green (learned). Tap a
-  cell to see its streak or reset it.
+- The table screen colours every cell grey (untouched), then amber → yellow → lime → green as the
+  streak climbs to learned. Tap a cell to see its streak or reset it.
+- The settings screen moves the ✓ / ✗ buttons above or below the card, and clears all progress
+  after a confirmation.
 
-Progress lives in `localStorage` and is written on every press.
+Progress and settings live in `localStorage` and are written on every change.
 
 ## iOS
 

@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react'
 import { CheckIcon, CrossIcon } from '../components/icons'
 import { product } from '../domain/facts'
+import type { VerdictPlacement } from '../domain/settings'
 import type { Drill } from '../useDrill'
 
 const REVEAL_DELAY_MS = 3000
 
-export const CardScreen = ({ drill }: { drill: Drill }) => {
+interface CardScreenProps {
+  readonly drill: Drill
+  readonly verdictPlacement: VerdictPlacement
+}
+
+export const CardScreen = ({ drill, verdictPlacement }: CardScreenProps) => {
   const { card, answer } = drill
   const [revealedCardId, setRevealedCardId] = useState<number | null>(null)
   const revealed = revealedCardId === card.id
@@ -18,7 +24,7 @@ export const CardScreen = ({ drill }: { drill: Drill }) => {
   const { left, right } = card.fact
 
   return (
-    <div className="card-screen">
+    <div className={`card-screen verdicts-${verdictPlacement}`}>
       <button
         type="button"
         className="card"
