@@ -1,0 +1,64 @@
+import { useEffect, useState } from 'react'
+import { CheckIcon, CrossIcon } from '../components/icons'
+import { product } from '../domain/facts'
+import type { Drill } from '../useDrill'
+
+const REVEAL_DELAY_MS = 3000
+
+export const CardScreen = ({ drill }: { drill: Drill }) => {
+  const { card, answer } = drill
+  const [revealedCardId, setRevealedCardId] = useState<number | null>(null)
+  const revealed = revealedCardId === card.id
+
+  useEffect(() => {
+    const timer = setTimeout(() => setRevealedCardId(card.id), REVEAL_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [card.id])
+
+  const { left, right } = card.fact
+
+  return (
+    <div className="card-screen">
+      <button
+        type="button"
+        className="card"
+        onClick={() => setRevealedCardId(card.id)}
+        aria-label="reveal"
+      >
+        <span className="question">
+          {left} × {right}
+        </span>
+        <span className={`answer ${revealed ? 'visible' : ''}`}>{product(card.fact)}</span>
+      </button>
+
+      <div className="timer">
+        {!revealed && (
+          <div
+            key={card.id}
+            className="timer-fill"
+            style={{ '--reveal-duration': `${REVEAL_DELAY_MS}ms` } as React.CSSProperties}
+          />
+        )}
+      </div>
+
+      <div className="verdicts">
+        <button
+          type="button"
+          className="verdict missed"
+          onClick={() => answer(false)}
+          aria-label="not learned"
+        >
+          <CrossIcon size={40} />
+        </button>
+        <button
+          type="button"
+          className="verdict knew"
+          onClick={() => answer(true)}
+          aria-label="learned"
+        >
+          <CheckIcon size={40} />
+        </button>
+      </div>
+    </div>
+  )
+}

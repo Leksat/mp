@@ -1,0 +1,39 @@
+import { product, type Fact } from '../domain/facts'
+import { factProgress, LEARNED_STREAK, type Progress } from '../domain/progress'
+import { CrossIcon, ResetIcon } from './icons'
+
+interface FactSheetProps {
+  readonly fact: Fact
+  readonly progress: Progress
+  onForget(): void
+  onClose(): void
+}
+
+export const FactSheet = ({ fact, progress, onForget, onClose }: FactSheetProps) => {
+  const streak = Math.min(factProgress(progress, fact)?.streak ?? 0, LEARNED_STREAK)
+
+  return (
+    <div className="sheet-backdrop" onClick={onClose}>
+      <div className="sheet" onClick={(event) => event.stopPropagation()}>
+        <div className="sheet-fact">
+          {fact.left} × {fact.right} = {product(fact)}
+        </div>
+
+        <div className="streak">
+          {Array.from({ length: LEARNED_STREAK }, (_, index) => (
+            <span key={index} className={`pip ${index < streak ? 'filled' : ''}`} />
+          ))}
+        </div>
+
+        <div className="sheet-actions">
+          <button type="button" className="sheet-action" onClick={onForget} aria-label="reset">
+            <ResetIcon size={26} />
+          </button>
+          <button type="button" className="sheet-action" onClick={onClose} aria-label="close">
+            <CrossIcon size={26} />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
