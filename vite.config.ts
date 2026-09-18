@@ -4,12 +4,18 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 const base = '/mp/'
 
+const buildId = new Date().toISOString().slice(0, 16).replace('T', ' ')
+
 export default defineConfig({
   base,
+  define: {
+    __BUILD_ID__: JSON.stringify(buildId),
+  },
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      injectRegister: null,
       includeAssets: ['favicon.svg', 'apple-touch-icon-180.png'],
       manifest: {
         name: '7×8',

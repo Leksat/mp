@@ -15,6 +15,7 @@
   --streak-2-ink: #24380a;
   --streak-3-ink: #05301c;
   --danger: #e2565f;
+  --warn: #d99b1f;
   --shadow: 0 10px 30px rgba(17, 22, 43, 0.1);
 }
 
@@ -31,6 +32,7 @@
     --streak-2: #7a9759;
     --streak-3: #1aa967;
     --danger: #b8434b;
+    --warn: #c79338;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   }
 }
@@ -368,8 +370,36 @@ button {
   color: #ffffff;
 }
 
-.danger-action {
+.settings-footer {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 14px;
+}
+
+.update-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 52px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--warn) 20%, transparent);
+  color: var(--warn);
+}
+
+.build-id {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.danger-action {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -389,11 +419,23 @@ button {
 }
 
 .tab {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 56px;
   color: var(--muted);
+}
+
+.tab-badge {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  translate: 8px 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--warn);
 }
 
 .tab.active {

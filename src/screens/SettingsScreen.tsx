@@ -1,11 +1,12 @@
 import { useState, type ComponentType } from 'react'
 import { ConfirmSheet } from '../components/ConfirmSheet'
-import { LayoutBottomIcon, LayoutTopIcon, TrashIcon } from '../components/icons'
+import { DownloadIcon, LayoutBottomIcon, LayoutTopIcon, TrashIcon } from '../components/icons'
 import {
   VERDICT_PLACEMENTS,
   type Settings,
   type VerdictPlacement,
 } from '../domain/settings'
+import { BUILD_ID } from '../pwa'
 
 const PLACEMENT_ICONS: Record<VerdictPlacement, ComponentType<{ readonly size?: number }>> = {
   top: LayoutTopIcon,
@@ -14,11 +15,19 @@ const PLACEMENT_ICONS: Record<VerdictPlacement, ComponentType<{ readonly size?: 
 
 interface SettingsScreenProps {
   readonly settings: Settings
+  readonly updateReady: boolean
   onChange(settings: Settings): void
   onClearProgress(): void
+  onUpdate(): void
 }
 
-export const SettingsScreen = ({ settings, onChange, onClearProgress }: SettingsScreenProps) => {
+export const SettingsScreen = ({
+  settings,
+  updateReady,
+  onChange,
+  onClearProgress,
+  onUpdate,
+}: SettingsScreenProps) => {
   const [confirmingClear, setConfirmingClear] = useState(false)
 
   return (
@@ -40,14 +49,31 @@ export const SettingsScreen = ({ settings, onChange, onClearProgress }: Settings
         })}
       </div>
 
-      <button
-        type="button"
-        className="danger-action"
-        onClick={() => setConfirmingClear(true)}
-        aria-label="clear progress"
-      >
-        <TrashIcon size={26} />
-      </button>
+      <div className="settings-footer">
+        <div className="footer-actions">
+          {updateReady && (
+            <button
+              type="button"
+              className="update-action"
+              onClick={onUpdate}
+              aria-label="install update"
+            >
+              <DownloadIcon size={26} />
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="danger-action"
+            onClick={() => setConfirmingClear(true)}
+            aria-label="clear progress"
+          >
+            <TrashIcon size={26} />
+          </button>
+        </div>
+
+        <div className="build-id">{BUILD_ID}</div>
+      </div>
 
       {confirmingClear && (
         <ConfirmSheet

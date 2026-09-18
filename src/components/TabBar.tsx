@@ -17,10 +17,11 @@ const TABS: readonly Tab[] = [
 
 interface TabBarProps {
   readonly screen: Screen
+  readonly badge?: Screen
   onSelect(screen: Screen): void
 }
 
-export const TabBar = ({ screen, onSelect }: TabBarProps) => (
+export const TabBar = ({ screen, badge, onSelect }: TabBarProps) => (
   <nav className="tabbar">
     {TABS.map(({ screen: target, label, Icon }) => (
       <button
@@ -31,6 +32,7 @@ export const TabBar = ({ screen, onSelect }: TabBarProps) => (
         aria-label={label}
       >
         <Icon size={26} />
+        {badge === target && <span className="tab-badge" />}
       </button>
     ))}
   </nav>

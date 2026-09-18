@@ -70,6 +70,14 @@ export const TrashIcon = ({ size }: IconProps) => (
   </Svg>
 )
 
+export const DownloadIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <path d="M12 3v11" />
+    <path d="M7.5 10l4.5 4.5 4.5-4.5" />
+    <path d="M4.5 20h15" />
+  </Svg>
+)
+
 export const ResetIcon = ({ size }: IconProps) => (
   <Svg size={size}>
     <path d="M20 12a8 8 0 11-2.3-5.6" />
