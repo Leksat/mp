@@ -11,6 +11,7 @@
     "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
+    "@khmyznikov/pwa-install": "^0.7.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

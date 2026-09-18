@@ -1,15 +1,17 @@
-import { useCallback, useEffect, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { Confetti } from './components/Confetti'
 import { TabBar, type Screen } from './components/TabBar'
 import { ALL_FACTS, type Fact } from './domain/facts'
 import { emptyProgress, forgetFact, learnedCount, withCelebrated } from './domain/progress'
 import { loadProgress, loadSettings, saveProgress, saveSettings } from './domain/storage'
-import { installUpdate, useUpdateReady } from './pwa'
+import { installUpdate, isStandalone, useUpdateReady } from './pwa'
 import { CardScreen } from './screens/CardScreen'
 import { GridScreen } from './screens/GridScreen'
 import { SettingsScreen } from './screens/SettingsScreen'
 import { useDrill } from './useDrill'
 import { useJustOpened } from './useJustOpened'
+
+const InstallBanner = lazy(() => import('./components/InstallBanner'))
 
 export const App = () => {
   const [progress, setProgress] = useState(loadProgress)
@@ -33,6 +35,11 @@ export const App = () => {
 
   return (
     <div className="app">
+      {!isStandalone && (
+        <Suspense>
+          <InstallBanner />
+        </Suspense>
+      )}
       <main className="screen">
         {screen === 'cards' && (
           <CardScreen drill={drill} verdictPlacement={settings.verdictPlacement} />

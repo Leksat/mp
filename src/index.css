@@ -75,6 +75,19 @@ button {
   padding-top: env(safe-area-inset-top);
 }
 
+.install-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: none;
+  height: 46px;
+  background: var(--indigo);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
 .screen {
   flex: 1;
   min-height: 0;
