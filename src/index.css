@@ -516,6 +516,41 @@ button {
   }
 }
 
+.firework {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 30;
+}
+
+.spark {
+  grid-area: 1 / 1;
+  font-size: 4.5rem;
+  line-height: 1;
+  opacity: 0;
+  animation: burst 1.6s ease-out var(--delay) forwards;
+}
+
+@keyframes burst {
+  from {
+    transform: translate(0, 0) scale(0.3) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--x), var(--y)) scale(var(--scale)) rotate(var(--spin));
+    opacity: 0;
+  }
+}
+
 .confetti {
   position: fixed;
   inset: 0;

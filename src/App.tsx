@@ -1,5 +1,6 @@
 import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { Confetti } from './components/Confetti'
+import { Firework } from './components/Firework'
 import { RotateIcon } from './components/icons'
 import { TabBar, type Screen } from './components/TabBar'
 import { ALL_FACTS, type Fact } from './domain/facts'
@@ -18,7 +19,11 @@ export const App = () => {
   const [progress, setProgress] = useState(loadProgress)
   const [settings, setSettings] = useState(loadSettings)
   const [screen, setScreen] = useState<Screen>('grid')
-  const showProgress = useCallback(() => setScreen('grid'), [])
+  const [firework, setFirework] = useState(0)
+  const showProgress = useCallback(() => {
+    setScreen('grid')
+    setFirework((round) => round + 1)
+  }, [])
   const drill = useDrill(progress, setProgress, settings.sessionLength, showProgress)
   const updateReady = useUpdateReady()
   const justOpened = useJustOpened()
@@ -62,6 +67,7 @@ export const App = () => {
         badge={updateReady ? 'settings' : undefined}
         onSelect={setScreen}
       />
+      {firework > 0 && <Firework key={firework} onDone={() => setFirework(0)} />}
       {celebrating && <Confetti onDone={stopCelebrating} />}
       <div className="rotate-hint" aria-label="rotate to portrait">
         <RotateIcon size={72} />

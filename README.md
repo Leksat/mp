@@ -18,6 +18,8 @@ A parent holds the phone, the kid says the answer aloud.
 - A session is a fixed number of cards, 20 by default. A bar on the far edge from the ✓ / ✗
   buttons fills with every answer, ✓ or ✗ alike. The last answer of a session switches to the
   table screen; going back to the cards tab starts a new one. The count lives in memory only.
+- Finishing a session sets off a short emoji firework. One emoji is drawn at random per session
+  and every spark in the burst is that same emoji, so the kid gets to wonder which one is next.
 - The table screen shows one number: streak points earned as a percentage, floored. Every fact is
   worth 3 points, so the base is 300 and each ✓ moves the number, not just the third one.
 - The table screen colours every cell grey (untouched), then amber → yellow → lime → green as the
