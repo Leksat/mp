@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FactSheet } from '../components/FactSheet'
-import { ALL_FACTS, FACTORS, toFact, type Fact } from '../domain/facts'
-import { factState, factStreak, learnedCount, type Progress } from '../domain/progress'
+import { FACTORS, toFact, type Fact } from '../domain/facts'
+import { factState, factStreak, learnedPercent, type Progress } from '../domain/progress'
 
 interface GridScreenProps {
   readonly progress: Progress
@@ -16,11 +16,7 @@ export const GridScreen = ({ progress, onForget }: GridScreenProps) => {
 
   return (
     <div className="grid-screen">
-      <div className="score">
-        <span className="score-done">{learnedCount(progress)}</span>
-        <span className="score-sep">/</span>
-        <span className="score-total">{ALL_FACTS.length}</span>
-      </div>
+      <div className="score">{learnedPercent(progress)}%</div>
 
       <div className="table" style={{ '--columns': FACTORS.length + 1 } as React.CSSProperties}>
         <div className="corner" />

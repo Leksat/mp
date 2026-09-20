@@ -36,6 +36,13 @@ export const factStreak = (progress: Progress, fact: Fact): number =>
 export const learnedCount = (progress: Progress): number =>
   ALL_FACTS.filter((fact) => isLearned(progress, fact)).length
 
+const TOTAL_STREAKS = ALL_FACTS.length * LEARNED_STREAK
+
+export const learnedPercent = (progress: Progress): number => {
+  const streaks = ALL_FACTS.reduce((total, fact) => total + factStreak(progress, fact), 0)
+  return Math.floor((streaks / TOTAL_STREAKS) * 100)
+}
+
 export const recordAnswer = (progress: Progress, fact: Fact, knew: boolean): Progress => {
   const tick = progress.tick + 1
   const key = factKey(fact)
