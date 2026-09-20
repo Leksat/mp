@@ -28,15 +28,6 @@ export const CrossIcon = ({ size }: IconProps) => (
   </Svg>
 )
 
-export const RotateIcon = ({ size }: IconProps) => (
-  <Svg size={size}>
-    <rect x="9" y="9" width="6" height="12" rx="1.5" />
-    <path d="M4 12a8 8 0 0 1 16 0" />
-    <path d="M1.5 9.5 4 12l2.5-2.5" />
-    <path d="M17.5 9.5 20 12l2.5-2.5" />
-  </Svg>
-)
-
 export const MinusIcon = ({ size }: IconProps) => (
   <Svg size={size}>
     <path d="M5 12h14" />
