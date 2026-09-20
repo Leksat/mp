@@ -79,22 +79,20 @@ button {
   padding-top: env(safe-area-inset-top);
 }
 
-@media (orientation: landscape) and (max-height: 520px) {
-  .app {
-    position: fixed;
-    top: 100vh;
-    left: 0;
-    width: 100vh;
-    height: 100vw;
-    transform: rotate(-90deg);
-    transform-origin: left top;
-    padding-top: max(env(safe-area-inset-left), env(safe-area-inset-right));
-  }
+.rotate-hint {
+  display: none;
+}
 
-  html[data-angle='270'] .app {
-    top: 0;
-    left: 100vw;
-    transform: rotate(90deg);
+@media (orientation: landscape) and (max-height: 520px) {
+  .rotate-hint {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--muted);
   }
 }
 
