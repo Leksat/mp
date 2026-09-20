@@ -4,6 +4,8 @@ Wordless multiplication table trainer, built as an installable PWA for phones.
 
 Live: https://leksat.github.io/mp/
 
+My first fully vibe coded app — every line of it was written by Claude.
+
 ## How it works
 
 A parent holds the phone, the kid says the answer aloud.
