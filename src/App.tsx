@@ -1,5 +1,6 @@
 import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { Confetti } from './components/Confetti'
+import { RotateIcon } from './components/icons'
 import { TabBar, type Screen } from './components/TabBar'
 import { ALL_FACTS, type Fact } from './domain/facts'
 import { emptyProgress, forgetFact, learnedCount, withCelebrated } from './domain/progress'
@@ -62,6 +63,9 @@ export const App = () => {
         onSelect={setScreen}
       />
       {celebrating && <Confetti onDone={stopCelebrating} />}
+      <div className="rotate-hint" aria-label="rotate to portrait">
+        <RotateIcon size={72} />
+      </div>
     </div>
   )
 }

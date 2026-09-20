@@ -40,6 +40,7 @@
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 html,
@@ -47,9 +48,12 @@ body,
 #root {
   height: 100%;
   margin: 0;
+  overflow: hidden;
 }
 
 body {
+  position: fixed;
+  inset: 0;
   background: var(--bg);
   color: var(--text);
   font-family: ui-rounded, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -71,8 +75,25 @@ button {
 .app {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: 100%;
   padding-top: env(safe-area-inset-top);
+}
+
+.rotate-hint {
+  display: none;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .rotate-hint {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--muted);
+  }
 }
 
 .install-banner {
