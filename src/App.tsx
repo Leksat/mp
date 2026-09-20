@@ -16,8 +16,9 @@ const InstallBanner = lazy(() => import('./components/InstallBanner'))
 export const App = () => {
   const [progress, setProgress] = useState(loadProgress)
   const [settings, setSettings] = useState(loadSettings)
-  const [screen, setScreen] = useState<Screen>('cards')
-  const drill = useDrill(progress, setProgress)
+  const [screen, setScreen] = useState<Screen>('grid')
+  const showProgress = useCallback(() => setScreen('grid'), [])
+  const drill = useDrill(progress, setProgress, settings.sessionLength, showProgress)
   const updateReady = useUpdateReady()
   const justOpened = useJustOpened()
 

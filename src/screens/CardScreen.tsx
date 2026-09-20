@@ -12,7 +12,7 @@ interface CardScreenProps {
 }
 
 export const CardScreen = ({ drill, verdictPlacement }: CardScreenProps) => {
-  const { card, answer } = drill
+  const { card, answered, sessionLength, answer } = drill
   const [revealedCardId, setRevealedCardId] = useState<number | null>(null)
   const revealed = revealedCardId === card.id
 
@@ -25,6 +25,10 @@ export const CardScreen = ({ drill, verdictPlacement }: CardScreenProps) => {
 
   return (
     <div className={`card-screen verdicts-${verdictPlacement}`}>
+      <div className="session">
+        <div className="session-fill" style={{ width: `${(answered / sessionLength) * 100}%` }} />
+      </div>
+
       <button
         type="button"
         className="card"

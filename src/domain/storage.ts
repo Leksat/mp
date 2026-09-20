@@ -1,5 +1,5 @@
 import { emptyProgress, type Progress } from './progress'
-import { defaultSettings, isVerdictPlacement, type Settings } from './settings'
+import { defaultSettings, isVerdictPlacement, toSessionLength, type Settings } from './settings'
 
 const PROGRESS_KEY = 'mp.progress.v2'
 const SETTINGS_KEY = 'mp.settings.v1'
@@ -36,7 +36,10 @@ export const saveProgress = (progress: Progress): void => write(PROGRESS_KEY, pr
 export const loadSettings = (): Settings => {
   const parsed = read(SETTINGS_KEY) as Partial<Settings> | undefined
   const placement = parsed?.verdictPlacement
-  return isVerdictPlacement(placement) ? { verdictPlacement: placement } : defaultSettings()
+  return {
+    verdictPlacement: isVerdictPlacement(placement) ? placement : defaultSettings().verdictPlacement,
+    sessionLength: toSessionLength(parsed?.sessionLength),
+  }
 }
 
 export const saveSettings = (settings: Settings): void => write(SETTINGS_KEY, settings)

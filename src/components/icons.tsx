@@ -28,6 +28,18 @@ export const CrossIcon = ({ size }: IconProps) => (
   </Svg>
 )
 
+export const MinusIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <path d="M5 12h14" />
+  </Svg>
+)
+
+export const PlusIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <path d="M12 5v14M5 12h14" />
+  </Svg>
+)
+
 export const GridIcon = ({ size }: IconProps) => (
   <Svg size={size}>
     <rect x="3" y="3" width="18" height="18" rx="2" />

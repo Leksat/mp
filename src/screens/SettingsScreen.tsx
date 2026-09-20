@@ -1,7 +1,16 @@
 import { useState, type ComponentType } from 'react'
 import { ConfirmSheet } from '../components/ConfirmSheet'
-import { DownloadIcon, LayoutBottomIcon, LayoutTopIcon, TrashIcon } from '../components/icons'
 import {
+  CardIcon,
+  DownloadIcon,
+  LayoutBottomIcon,
+  LayoutTopIcon,
+  MinusIcon,
+  PlusIcon,
+  TrashIcon,
+} from '../components/icons'
+import {
+  MIN_SESSION_LENGTH,
   VERDICT_PLACEMENTS,
   type Settings,
   type VerdictPlacement,
@@ -47,6 +56,28 @@ export const SettingsScreen = ({
             </button>
           )
         })}
+      </div>
+
+      <div className="stepper">
+        <CardIcon size={30} />
+        <button
+          type="button"
+          className="stepper-button"
+          disabled={settings.sessionLength <= MIN_SESSION_LENGTH}
+          onClick={() => onChange({ ...settings, sessionLength: settings.sessionLength - 1 })}
+          aria-label="shorter session"
+        >
+          <MinusIcon size={24} />
+        </button>
+        <span className="stepper-value">{settings.sessionLength}</span>
+        <button
+          type="button"
+          className="stepper-button"
+          onClick={() => onChange({ ...settings, sessionLength: settings.sessionLength + 1 })}
+          aria-label="longer session"
+        >
+          <PlusIcon size={24} />
+        </button>
       </div>
 
       <div className="settings-footer">
