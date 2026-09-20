@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType } from 'react'
+import { useState, type ComponentType } from 'react'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import {
   CardIcon,
@@ -16,36 +16,6 @@ import {
   type VerdictPlacement,
 } from '../domain/settings'
 import { BUILD_ID } from '../pwa'
-
-// AXXX temporary rotation diagnostics
-const viewportReport = (): string => {
-  const visual = window.visualViewport
-  const root = document.documentElement
-  return [
-    `win ${window.innerWidth}×${window.innerHeight}`,
-    `vv ${Math.round(visual?.width ?? 0)}×${Math.round(visual?.height ?? 0)}`,
-    `scr ${screen.width}×${screen.height}`,
-    `doc ${root.clientWidth}×${root.clientHeight}`,
-    `ang ${screen.orientation?.angle ?? '?'}`,
-  ].join(' · ')
-}
-
-// AXXX temporary rotation diagnostics
-const useViewportReport = (): string => {
-  const [report, setReport] = useState(viewportReport)
-
-  useEffect(() => {
-    const update = () => setReport(viewportReport())
-    window.addEventListener('resize', update)
-    window.addEventListener('orientationchange', update)
-    return () => {
-      window.removeEventListener('resize', update)
-      window.removeEventListener('orientationchange', update)
-    }
-  }, [])
-
-  return report
-}
 
 const PLACEMENT_ICONS: Record<VerdictPlacement, ComponentType<{ readonly size?: number }>> = {
   top: LayoutTopIcon,
@@ -134,7 +104,6 @@ export const SettingsScreen = ({
         </div>
 
         <div className="build-id">{BUILD_ID}</div>
-        <div className="build-id">{useViewportReport()}</div>
       </div>
 
       {confirmingClear && (
