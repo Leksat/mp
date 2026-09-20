@@ -4,15 +4,14 @@ export const useJustOpened = () => {
   const [justOpened, setJustOpened] = useState(true)
 
   useEffect(() => {
-    const onTouch = () => setJustOpened(false)
-    const onVisibility = () => setJustOpened(document.visibilityState === 'visible')
+    const settle = () => setJustOpened(false)
 
-    document.addEventListener('pointerdown', onTouch)
-    document.addEventListener('visibilitychange', onVisibility)
+    document.addEventListener('pointerdown', settle)
+    document.addEventListener('visibilitychange', settle)
 
     return () => {
-      document.removeEventListener('pointerdown', onTouch)
-      document.removeEventListener('visibilitychange', onVisibility)
+      document.removeEventListener('pointerdown', settle)
+      document.removeEventListener('visibilitychange', settle)
     }
   }, [])
 
