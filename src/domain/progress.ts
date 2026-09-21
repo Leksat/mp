@@ -1,8 +1,8 @@
 import { ALL_FACTS, baseRequiredStreak, factKey, isTie, parseFactKey, twin, type Fact } from './facts'
 
 const MAX_REQUIRED_STREAK = 8
-const MISS_REQUIREMENT_COST = 2
-const MISS_PENALTY = 2
+const MISSES_PER_EXTRA_REP = 3
+const MISS_PENALTY_SHARE = 3
 const TWIN_CREDIT = 0.5
 const REVIEW_INTERVAL_DAYS = [1, 3, 7, 16, 35]
 const LAST_BOX = REVIEW_INTERVAL_DAYS.length - 1
@@ -33,8 +33,13 @@ export const emptyProgress = (): Progress => ({ tick: 0, facts: {}, celebrated: 
 export const factProgress = (progress: Progress, fact: Fact): FactProgress | undefined =>
   progress.facts[factKey(fact)]
 
-const requiredFor = (fact: Fact, misses: number): number =>
-  Math.min(baseRequiredStreak(fact) + MISS_REQUIREMENT_COST * misses, MAX_REQUIRED_STREAK)
+const requiredFor = (fact: Fact, misses: number): number => {
+  const base = baseRequiredStreak(fact)
+  return Math.min(base + Math.floor((base * misses) / MISSES_PER_EXTRA_REP), MAX_REQUIRED_STREAK)
+}
+
+const missPenalty = (required: number): number =>
+  Math.max(1, Math.round(required / MISS_PENALTY_SHARE))
 
 export const requiredStreak = (progress: Progress, fact: Fact): number =>
   requiredFor(fact, factProgress(progress, fact)?.misses ?? 0)
@@ -98,7 +103,7 @@ const answered = (
   const entry: FactProgress = {
     streak: knew
       ? Math.min(streakBefore + (fluent ? 1 : 0), required)
-      : Math.max(0, streakBefore - MISS_PENALTY),
+      : Math.max(0, streakBefore - missPenalty(required)),
     misses,
     lastSeenTick: tick,
     lastMissedTick: knew ? (previous?.lastMissedTick ?? null) : tick,
