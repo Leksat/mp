@@ -4,26 +4,47 @@ Wordless multiplication table trainer, built as an installable PWA for phones.
 
 Live: https://leksat.github.io/mp/
 
+@README.md
+
 ## How it works
 
 A parent holds the phone, the kid says the answer aloud.
 
 - The app opens on the table screen, so the kid sees the overall progress first.
 - 100 facts, 1-10. `7 × 8` and `8 × 7` are tracked separately.
-- A fact is learned after 3 consecutive ✓. One ✗ resets the streak to zero.
 - The answer auto-reveals after 3 seconds, or immediately when the card is tapped. The ✓ / ✗
   buttons are live from the moment the card appears.
+
+### Learning algorithm
+
+The number of ✓ a fact needs is not the same for every fact, and only fast answers count.
+
+- Fluency: an answer given before the 3 second auto-reveal counts as fluent. A slow ✓ holds the
+  streak but does not advance it — a kid who counts on fingers is not retrieving the fact.
+- Reps to learned depend on the fact: 1 for `×1` and `×10` (rules, not memories), 2 for ties,
+  `×2`, `×5` and `×9` (pattern-supported), 5 for the hard core (`3×7 3×8 4×6 4×7 4×8 6×7 6×8 7×8`
+  and their twins), 3 for the rest.
+- The requirement adapts: every ✗ on a fact permanently adds 2 to its requirement, up to 8. The
+  hardcoded tiers are only a cold start; the kid's own errors decide the rest.
+- A ✗ drops the streak by 2 rather than to zero.
+- A fluent ✓ gives the twin fact half a step, but only once the twin is already in progress.
+- Learned facts come back on a Leitner schedule of 1, 3, 7, 16 and 35 days, one box up per fluent
+  review, one box down on a ✗.
+- At most 7 facts are in progress at a time; the rest stay untouched until a slot frees up. New
+  facts are introduced easiest first.
 - Card selection is weighted: recently missed facts come back sooner, roughly every fifth card is
-  a learned fact due for review, and no fact repeats within 5 cards.
+  a learned fact that is due, no fact repeats within 5 cards, and confusable facts (sharing a
+  factor, or with products within 2) stay apart within 2 cards.
 - A session is a fixed number of cards, 20 by default. A bar on the far edge from the ✓ / ✗
   buttons fills with every answer, ✓ or ✗ alike. The last answer of a session switches to the
   table screen; going back to the cards tab starts a new one. The count lives in memory only.
 - Finishing a session sets off a short emoji firework. One emoji is drawn at random per session
   and every spark in the burst is that same emoji, so the kid gets to wonder which one is next.
-- The table screen shows one number: streak points earned as a percentage, floored. Every fact is
-  worth 3 points, so the base is 300 and each ✓ moves the number, not just the third one.
+- The table screen shows one number: streak points earned as a percentage, floored. A fact is
+  worth its cold-start requirement, so the denominator never moves and each ✓ moves the number,
+  not just the last one.
 - The table screen colours every cell grey (untouched), then amber → yellow → lime → green as the
-  streak climbs to learned. Tap a cell to see its streak or reset it.
+  streak climbs towards that fact's own requirement. Tap a cell to see its streak or reset it.
 - The settings screen moves the ✓ / ✗ buttons above or below the card, sets the session length
   with a stepper (minimum 1, no maximum), and clears all progress after a confirmation.
 
