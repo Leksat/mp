@@ -1,5 +1,5 @@
 import { product, type Fact } from '../domain/facts'
-import { factStreak, LEARNED_STREAK, type Progress } from '../domain/progress'
+import { factStreak, requiredStreak, type Progress } from '../domain/progress'
 import { CrossIcon, ResetIcon } from './icons'
 
 interface FactSheetProps {
@@ -11,6 +11,8 @@ interface FactSheetProps {
 
 export const FactSheet = ({ fact, progress, onForget, onClose }: FactSheetProps) => {
   const streak = factStreak(progress, fact)
+  const required = requiredStreak(progress, fact)
+  const pipTone = (index: number): number => Math.min(3, Math.ceil(((index + 1) / required) * 3))
 
   return (
     <div className="sheet-backdrop" onClick={onClose}>
@@ -20,8 +22,11 @@ export const FactSheet = ({ fact, progress, onForget, onClose }: FactSheetProps)
         </div>
 
         <div className="streak">
-          {Array.from({ length: LEARNED_STREAK }, (_, index) => (
-            <span key={index} className={`pip ${index < streak ? 'filled' : ''}`} />
+          {Array.from({ length: required }, (_, index) => (
+            <span
+              key={index}
+              className={index < streak ? `pip filled tone-${pipTone(index)}` : 'pip'}
+            />
           ))}
         </div>
 

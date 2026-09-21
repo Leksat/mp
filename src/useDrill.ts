@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type SetStateAction } from 'react'
-import { factKey, type Fact } from './domain/facts'
+import { type Fact } from './domain/facts'
 import { recordAnswer, type Progress } from './domain/progress'
 import { COOLDOWN_CARDS, pickFact } from './domain/selection'
 
@@ -8,16 +8,16 @@ export interface Card {
   readonly fact: Fact
 }
 
-const nextCard = (progress: Progress, recentKeys: readonly string[], id: number): Card => ({
+const nextCard = (progress: Progress, recent: readonly Fact[], id: number): Card => ({
   id,
-  fact: pickFact(progress, recentKeys),
+  fact: pickFact(progress, recent),
 })
 
 export interface Drill {
   readonly card: Card
   readonly answered: number
   readonly sessionLength: number
-  answer(knew: boolean): void
+  answer(knew: boolean, fluent: boolean): void
 }
 
 export const useDrill = (
@@ -26,18 +26,18 @@ export const useDrill = (
   sessionLength: number,
   onSessionDone: () => void,
 ): Drill => {
-  const [recentKeys, setRecentKeys] = useState<readonly string[]>([])
+  const [recent, setRecent] = useState<readonly Fact[]>([])
   const [card, setCard] = useState<Card>(() => nextCard(progress, [], 0))
   const [answered, setAnswered] = useState(0)
 
-  const answer = (knew: boolean) => {
-    const updated = recordAnswer(progress, card.fact, knew)
-    const updatedRecentKeys = [factKey(card.fact), ...recentKeys].slice(0, COOLDOWN_CARDS)
+  const answer = (knew: boolean, fluent: boolean) => {
+    const updated = recordAnswer(progress, card.fact, knew, fluent)
+    const updatedRecent = [card.fact, ...recent].slice(0, COOLDOWN_CARDS)
     const done = answered + 1 >= sessionLength
 
     setProgress(updated)
-    setRecentKeys(updatedRecentKeys)
-    setCard(nextCard(updated, updatedRecentKeys, card.id + 1))
+    setRecent(updatedRecent)
+    setCard(nextCard(updated, updatedRecent, card.id + 1))
     setAnswered(done ? 0 : answered + 1)
 
     if (done) onSessionDone()

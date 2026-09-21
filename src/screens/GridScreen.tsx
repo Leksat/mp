@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FactSheet } from '../components/FactSheet'
 import { FACTORS, toFact, type Fact } from '../domain/facts'
-import { factState, factStreak, learnedPercent, type Progress } from '../domain/progress'
+import { factState, factTone, learnedPercent, type Progress } from '../domain/progress'
 
 interface GridScreenProps {
   readonly progress: Progress
@@ -9,7 +9,7 @@ interface GridScreenProps {
 }
 
 const cellTone = (progress: Progress, fact: Fact): string =>
-  factState(progress, fact) === 'untouched' ? 'untouched' : `streak-${factStreak(progress, fact)}`
+  factState(progress, fact) === 'untouched' ? 'untouched' : `streak-${factTone(progress, fact)}`
 
 export const GridScreen = ({ progress, onForget }: GridScreenProps) => {
   const [selected, setSelected] = useState<Fact | null>(null)

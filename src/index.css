@@ -344,15 +344,15 @@ button {
   background: var(--untouched);
 }
 
-.pip.filled:nth-child(1) {
+.pip.tone-1 {
   background: var(--streak-1);
 }
 
-.pip.filled:nth-child(2) {
+.pip.tone-2 {
   background: var(--streak-2);
 }
 
-.pip.filled:nth-child(3) {
+.pip.tone-3 {
   background: var(--streak-3);
 }
 

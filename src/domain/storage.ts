@@ -1,7 +1,8 @@
-import { emptyProgress, type Progress } from './progress'
+import { emptyProgress, fromLegacy, type LegacyProgress, type Progress } from './progress'
 import { defaultSettings, isVerdictPlacement, toSessionLength, type Settings } from './settings'
 
-const PROGRESS_KEY = 'mp.progress.v2'
+const PROGRESS_KEY = 'mp.progress.v3'
+const LEGACY_PROGRESS_KEY = 'mp.progress.v2'
 const SETTINGS_KEY = 'mp.settings.v1'
 
 const read = (key: string): unknown => {
@@ -23,12 +24,16 @@ const write = (key: string, value: unknown): void => {
 
 export const loadProgress = (): Progress => {
   const parsed = read(PROGRESS_KEY) as Partial<Progress> | undefined
-  if (!parsed) return emptyProgress()
-  return {
-    tick: parsed.tick ?? 0,
-    facts: parsed.facts ?? {},
-    celebrated: parsed.celebrated ?? false,
+  if (parsed) {
+    return {
+      tick: parsed.tick ?? 0,
+      facts: parsed.facts ?? {},
+      celebrated: parsed.celebrated ?? false,
+    }
   }
+
+  const legacy = read(LEGACY_PROGRESS_KEY) as LegacyProgress | undefined
+  return legacy ? fromLegacy(legacy) : emptyProgress()
 }
 
 export const saveProgress = (progress: Progress): void => write(PROGRESS_KEY, progress)
