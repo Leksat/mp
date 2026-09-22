@@ -3,7 +3,6 @@ import { ALL_FACTS, baseRequiredStreak, factKey, isTie, parseFactKey, twin, type
 const MAX_REQUIRED_STREAK = 8
 const MISSES_PER_EXTRA_REP = 3
 const MISS_PENALTY_SHARE = 3
-const SLOW_CREDIT = 0.5
 const TWIN_CREDIT = 0.5
 const REVIEW_INTERVAL_DAYS = [1, 3, 7, 16, 35]
 const LAST_BOX = REVIEW_INTERVAL_DAYS.length - 1
@@ -92,7 +91,6 @@ const answered = (
   previous: FactProgress | undefined,
   fact: Fact,
   knew: boolean,
-  fluent: boolean,
   tick: number,
   day: number,
 ): FactProgress => {
@@ -103,7 +101,7 @@ const answered = (
   const boxBefore = previous?.box ?? 0
   const entry: FactProgress = {
     streak: knew
-      ? Math.min(streakBefore + (fluent ? 1 : SLOW_CREDIT), required)
+      ? Math.min(streakBefore + 1, required)
       : Math.max(0, streakBefore - missPenalty(required)),
     misses,
     lastSeenTick: tick,
@@ -126,20 +124,15 @@ const credited = (previous: FactProgress, fact: Fact, day: number): FactProgress
     day,
   )
 
-export const recordAnswer = (
-  progress: Progress,
-  fact: Fact,
-  knew: boolean,
-  fluent: boolean,
-): Progress => {
+export const recordAnswer = (progress: Progress, fact: Fact, knew: boolean): Progress => {
   const tick = progress.tick + 1
   const day = today()
   const facts = { ...progress.facts }
-  facts[factKey(fact)] = answered(progress.facts[factKey(fact)], fact, knew, fluent, tick, day)
+  facts[factKey(fact)] = answered(progress.facts[factKey(fact)], fact, knew, tick, day)
 
   const partner = twin(fact)
   const partnerEntry = progress.facts[factKey(partner)]
-  if (knew && fluent && !isTie(fact) && partnerEntry && !isLearned(progress, partner)) {
+  if (knew && !isTie(fact) && partnerEntry && !isLearned(progress, partner)) {
     facts[factKey(partner)] = credited(partnerEntry, partner, day)
   }
 

@@ -17,7 +17,7 @@ export interface Drill {
   readonly card: Card
   readonly answered: number
   readonly sessionLength: number
-  answer(knew: boolean, fluent: boolean): void
+  answer(knew: boolean): void
 }
 
 export const useDrill = (
@@ -30,8 +30,8 @@ export const useDrill = (
   const [card, setCard] = useState<Card>(() => nextCard(progress, [], 0))
   const [answered, setAnswered] = useState(0)
 
-  const answer = (knew: boolean, fluent: boolean) => {
-    const updated = recordAnswer(progress, card.fact, knew, fluent)
+  const answer = (knew: boolean) => {
+    const updated = recordAnswer(progress, card.fact, knew)
     const updatedRecent = [card.fact, ...recent].slice(0, COOLDOWN_CARDS)
     const done = answered + 1 >= sessionLength
 

@@ -18,44 +18,35 @@ const answerTimes = (
   fact: ReturnType<typeof toFact>,
   times: number,
   knew: boolean,
-  fluent: boolean,
 ): Progress =>
   Array.from({ length: times }).reduce<Progress>(
-    (current) => recordAnswer(current, fact, knew, fluent),
+    (current) => recordAnswer(current, fact, knew),
     progress,
   )
 
 describe('reaching learned', () => {
-  it('learns a rule fact in one fluent answer', () => {
+  it('learns a rule fact in one answer', () => {
     const fact = toFact(1, 6)
-    const progress = recordAnswer(emptyProgress(), fact, true, true)
+    const progress = recordAnswer(emptyProgress(), fact, true)
     expect(factState(progress, fact)).toBe('learned')
   })
 
-  it('learns the hard core in five fluent answers, not fewer', () => {
+  it('learns the hard core in five answers, not fewer', () => {
     const fact = toFact(7, 8)
-    const four = answerTimes(emptyProgress(), fact, 4, true, true)
+    const four = answerTimes(emptyProgress(), fact, 4, true)
     expect(factState(four, fact)).toBe('learning')
-    expect(factState(recordAnswer(four, fact, true, true), fact)).toBe('learned')
+    expect(factState(recordAnswer(four, fact, true), fact)).toBe('learned')
   })
 
-  it('advances on a slow answer so the round always moves', () => {
+  it('counts every ✓ the same, whenever the button is tapped', () => {
     const fact = toFact(7, 8)
-    const one = recordAnswer(emptyProgress(), fact, true, false)
-    expect(factStreak(one, fact)).toBeGreaterThan(0)
-    expect(factState(answerTimes(emptyProgress(), fact, 10, true, false), fact)).toBe('learned')
-  })
-
-  it('counts a slow answer for less than a fluent one', () => {
-    const fact = toFact(7, 8)
-    const slow = recordAnswer(emptyProgress(), fact, true, false)
-    const fast = recordAnswer(emptyProgress(), fact, true, true)
-    expect(factStreak(slow, fact)).toBeLessThan(factStreak(fast, fact))
+    const one = recordAnswer(emptyProgress(), fact, true)
+    expect(factStreak(one, fact)).toBe(1)
   })
 
   it('never advances past the requirement', () => {
     const fact = toFact(2, 6)
-    const progress = answerTimes(emptyProgress(), fact, 9, true, true)
+    const progress = answerTimes(emptyProgress(), fact, 9, true)
     expect(factStreak(progress, fact)).toBe(requiredStreak(progress, fact))
   })
 })
@@ -63,16 +54,16 @@ describe('reaching learned', () => {
 describe('missing a fact', () => {
   const missedOnce = (left: number, right: number) => {
     const fact = toFact(left, right)
-    const learned = answerTimes(emptyProgress(), fact, 8, true, true)
+    const learned = answerTimes(emptyProgress(), fact, 8, true)
     expect(factState(learned, fact)).toBe('learned')
-    return { fact, after: recordAnswer(learned, fact, false, false) }
+    return { fact, after: recordAnswer(learned, fact, false) }
   }
 
   it('costs a rule fact a single rep it wins straight back', () => {
     const { fact, after } = missedOnce(1, 6)
     expect(factStreak(after, fact)).toBe(0)
     expect(requiredStreak(after, fact)).toBe(1)
-    expect(factState(recordAnswer(after, fact, true, true), fact)).toBe('learned')
+    expect(factState(recordAnswer(after, fact, true), fact)).toBe('learned')
   })
 
   it('keeps most of a hard fact instead of resetting it', () => {
@@ -83,14 +74,14 @@ describe('missing a fact', () => {
 
   it('raises the requirement only after repeated misses', () => {
     const fact = toFact(1, 6)
-    const twice = answerTimes(emptyProgress(), fact, 2, false, false)
+    const twice = answerTimes(emptyProgress(), fact, 2, false)
     expect(requiredStreak(twice, fact)).toBe(1)
-    expect(requiredStreak(recordAnswer(twice, fact, false, false), fact)).toBe(2)
+    expect(requiredStreak(recordAnswer(twice, fact, false), fact)).toBe(2)
   })
 
   it('never lets the requirement run away', () => {
     const fact = toFact(7, 8)
-    const progress = answerTimes(emptyProgress(), fact, 40, false, false)
+    const progress = answerTimes(emptyProgress(), fact, 40, false)
     expect(requiredStreak(progress, fact)).toBeLessThanOrEqual(8)
     expect(factStreak(progress, fact)).toBe(0)
   })
@@ -100,13 +91,13 @@ describe('twin credit', () => {
   it('gives a started twin half a step', () => {
     const fact = toFact(4, 7)
     const twin = toFact(7, 4)
-    const started = recordAnswer(emptyProgress(), twin, true, true)
-    const after = recordAnswer(started, fact, true, true)
+    const started = recordAnswer(emptyProgress(), twin, true)
+    const after = recordAnswer(started, fact, true)
     expect(factStreak(after, twin)).toBeGreaterThan(factStreak(started, twin))
   })
 
   it('leaves an untouched twin untouched', () => {
-    const after = recordAnswer(emptyProgress(), toFact(4, 7), true, true)
+    const after = recordAnswer(emptyProgress(), toFact(4, 7), true)
     expect(factState(after, toFact(7, 4))).toBe('untouched')
   })
 })
@@ -114,26 +105,26 @@ describe('twin credit', () => {
 describe('review scheduling', () => {
   it('holds a freshly learned fact back until tomorrow', () => {
     const fact = toFact(3, 4)
-    const progress = answerTimes(emptyProgress(), fact, 3, true, true)
+    const progress = answerTimes(emptyProgress(), fact, 3, true)
     expect(isDueForReview(progress, fact, today())).toBe(false)
     expect(isDueForReview(progress, fact, today() + 1)).toBe(true)
   })
 
   it('pushes each review further out', () => {
     const fact = toFact(3, 4)
-    let progress = answerTimes(emptyProgress(), fact, 3, true, true)
+    let progress = answerTimes(emptyProgress(), fact, 3, true)
     const firstDue = progress.facts['3x4'].dueDay
-    progress = recordAnswer(progress, fact, true, true)
+    progress = recordAnswer(progress, fact, true)
     expect(progress.facts['3x4'].dueDay).toBeGreaterThan(firstDue!)
   })
 
-  it('pushes a slow review out too, so a right answer always buys distance', () => {
+  it('pushes a review out every time, so a ✓ always buys distance', () => {
     const fact = toFact(3, 4)
-    let progress = answerTimes(emptyProgress(), fact, 3, true, true)
+    let progress = answerTimes(emptyProgress(), fact, 3, true)
     let due = progress.facts['3x4'].dueDay!
 
     for (let review = 0; review < 4; review++) {
-      progress = recordAnswer(progress, fact, true, false)
+      progress = recordAnswer(progress, fact, true)
       const next = progress.facts['3x4'].dueDay!
       expect(next).toBeGreaterThan(due)
       due = next
@@ -142,10 +133,10 @@ describe('review scheduling', () => {
 
   it('brings a missed review back sooner', () => {
     const fact = toFact(3, 4)
-    let progress = answerTimes(emptyProgress(), fact, 3, true, true)
-    progress = answerTimes(progress, fact, 3, true, true)
+    let progress = answerTimes(emptyProgress(), fact, 3, true)
+    progress = answerTimes(progress, fact, 3, true)
     const far = progress.facts['3x4'].box
-    progress = recordAnswer(progress, fact, false, false)
+    progress = recordAnswer(progress, fact, false)
     expect(progress.facts['3x4'].box).toBeLessThan(far)
   })
 })
@@ -154,7 +145,7 @@ describe('the score', () => {
   it('starts at zero and ends at a hundred', () => {
     expect(learnedPercent(emptyProgress())).toBe(0)
     const everything = ALL_FACTS.reduce(
-      (current, fact) => answerTimes(current, fact, 8, true, true),
+      (current, fact) => answerTimes(current, fact, 8, true),
       emptyProgress(),
     )
     expect(learnedPercent(everything)).toBe(100)
@@ -162,9 +153,9 @@ describe('the score', () => {
 
   it('does not shrink when a fact gets harder', () => {
     const fact = toFact(7, 8)
-    const learned = answerTimes(emptyProgress(), fact, 5, true, true)
-    const missed = answerTimes(learned, fact, 3, false, false)
-    const relearned = answerTimes(missed, fact, 8, true, true)
+    const learned = answerTimes(emptyProgress(), fact, 5, true)
+    const missed = answerTimes(learned, fact, 3, false)
+    const relearned = answerTimes(missed, fact, 8, true)
     expect(learnedPercent(relearned)).toBe(learnedPercent(learned))
   })
 })

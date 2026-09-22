@@ -14,15 +14,10 @@ interface CardScreenProps {
 export const CardScreen = ({ drill, verdictPlacement }: CardScreenProps) => {
   const { card, answered, sessionLength, answer } = drill
   const [revealedCardId, setRevealedCardId] = useState<number | null>(null)
-  const [waitedCardId, setWaitedCardId] = useState<number | null>(null)
   const revealed = revealedCardId === card.id
-  const fluent = waitedCardId !== card.id
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setRevealedCardId(card.id)
-      setWaitedCardId(card.id)
-    }, REVEAL_DELAY_MS)
+    const timer = setTimeout(() => setRevealedCardId(card.id), REVEAL_DELAY_MS)
     return () => clearTimeout(timer)
   }, [card.id])
 
@@ -60,7 +55,7 @@ export const CardScreen = ({ drill, verdictPlacement }: CardScreenProps) => {
         <button
           type="button"
           className="verdict missed"
-          onClick={() => answer(false, fluent)}
+          onClick={() => answer(false)}
           aria-label="not learned"
         >
           <CrossIcon size={40} />
@@ -68,7 +63,7 @@ export const CardScreen = ({ drill, verdictPlacement }: CardScreenProps) => {
         <button
           type="button"
           className="verdict knew"
-          onClick={() => answer(true, fluent)}
+          onClick={() => answer(true)}
           aria-label="learned"
         >
           <CheckIcon size={40} />

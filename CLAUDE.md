@@ -17,11 +17,10 @@ A parent holds the phone, the kid says the answer aloud.
 
 ### Learning algorithm
 
-The number of ✓ a fact needs is not the same for every fact, and only fast answers count.
+The number of ✓ a fact needs is not the same for every fact.
 
-- Fluency: an answer given before the 3 second auto-reveal counts as fluent and is worth a full
-  step. A slow ✓ is worth half a step — a kid who counts on fingers is not retrieving the fact,
-  but the round must always move forward.
+- Every ✓ is worth one step. When the button is tapped never matters — the parent holds the phone,
+  and their timing says nothing about the kid.
 - Reps to learned depend on the fact: 1 for `×1` and `×10` (rules, not memories), 2 for ties,
   `×2`, `×5` and `×9` (pattern-supported), 5 for the hard core (`3×7 3×8 4×6 4×7 4×8 6×7 6×8 7×8`
   and their twins), 3 for the rest.
@@ -30,10 +29,9 @@ The number of ✓ a fact needs is not the same for every fact, and only fast ans
 - A ✗ drops the streak by a third of the requirement, at least 1, rather than to zero. Penalties
   stay proportional to the fact: one slip on `1 × 6` costs its single rep and is won back with the
   next ✓, while `7 × 8` goes from 5/5 to 3/6.
-- A fluent ✓ gives the twin fact half a step, but only once the twin is already in progress.
+- A ✓ gives the twin fact half a step, but only once the twin is already in progress.
 - Learned facts come back on a Leitner schedule of 1, 3, 7, 16 and 35 days, one box up per correct
-  review whether fluent or not, one box down on a ✗. Fluency decides streak credit, never the
-  schedule — a right answer always buys distance from the fact.
+  review, one box down on a ✗ — a right answer always buys distance from the fact.
 - A learned fact is served only on or after its due date. When there is nothing left to drill and
   nothing due, the card comes from the quarter of the table due soonest, least recently seen
   first, so an idle day still varies.

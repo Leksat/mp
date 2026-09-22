@@ -12,7 +12,7 @@ import {
 } from './progress'
 import { COOLDOWN_CARDS, pickFact } from './selection'
 
-const drill = (cards: number, knew: (fact: Fact) => boolean, fluent = true) => {
+const drill = (cards: number, knew: (fact: Fact) => boolean) => {
   let progress = emptyProgress()
   let recent: Fact[] = []
   const seen: Fact[] = []
@@ -20,7 +20,7 @@ const drill = (cards: number, knew: (fact: Fact) => boolean, fluent = true) => {
   for (let card = 0; card < cards; card++) {
     const fact = pickFact(progress, recent)
     seen.push(fact)
-    progress = recordAnswer(progress, fact, knew(fact), fluent)
+    progress = recordAnswer(progress, fact, knew(fact))
     recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
   }
 
@@ -81,7 +81,7 @@ describe('picking the next card', () => {
     for (let card = 0; card < 20; card++) {
       const fact = pickFact(progress, recent)
       if (isLearned(progress, fact)) servedWhileLearned.push(fact)
-      progress = recordAnswer(progress, fact, true, true)
+      progress = recordAnswer(progress, fact, true)
       recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
     }
 
@@ -119,7 +119,7 @@ describe('picking the next card', () => {
     for (let card = 0; card < 20; card++) {
       const fact = pickFact(progress, recent)
       seen.push(fact)
-      progress = recordAnswer(progress, fact, true, false)
+      progress = recordAnswer(progress, fact, true)
       recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
     }
 
@@ -135,20 +135,20 @@ describe('picking the next card', () => {
   it('always returns a fact even once everything is learned', () => {
     let progress: Progress = emptyProgress()
     for (const fact of ALL_FACTS) {
-      for (let rep = 0; rep < 8; rep++) progress = recordAnswer(progress, fact, true, true)
+      for (let rep = 0; rep < 8; rep++) progress = recordAnswer(progress, fact, true)
     }
     expect(pickFact(progress, [])).toBeDefined()
   })
 })
 
-describe('a session of slow but correct answers', () => {
+describe('a session of correct answers', () => {
   it('still moves facts to learned', () => {
     let progress = emptyProgress()
     let recent: Fact[] = []
 
     for (let card = 0; card < 20; card++) {
       const fact = pickFact(progress, recent)
-      progress = recordAnswer(progress, fact, true, false)
+      progress = recordAnswer(progress, fact, true)
       recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
     }
 
@@ -162,7 +162,7 @@ describe('a session of slow but correct answers', () => {
 
     while (ALL_FACTS.some((fact) => !isLearned(progress, fact)) && cards < 5000) {
       const fact = pickFact(progress, recent)
-      progress = recordAnswer(progress, fact, true, false)
+      progress = recordAnswer(progress, fact, true)
       recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
       cards++
     }
@@ -177,7 +177,7 @@ describe('a kid who keeps missing one fact', () => {
     let progress = emptyProgress()
     for (const fact of ALL_FACTS) {
       for (let rep = 0; rep < 8; rep++) {
-        progress = recordAnswer(progress, fact, factKey(fact) !== factKey(stubborn), true)
+        progress = recordAnswer(progress, fact, factKey(fact) !== factKey(stubborn))
       }
     }
 
@@ -186,7 +186,7 @@ describe('a kid who keeps missing one fact', () => {
     for (let card = 0; card < 40; card++) {
       const fact = pickFact(progress, recent)
       seen.push(fact)
-      progress = recordAnswer(progress, fact, false, false)
+      progress = recordAnswer(progress, fact, false)
       recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
     }
 
