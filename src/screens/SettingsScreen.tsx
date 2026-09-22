@@ -1,4 +1,5 @@
 import { useState, type ComponentType } from 'react'
+import { BUILD_TIME } from '../buildTime'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import {
   CardIcon,
@@ -15,7 +16,6 @@ import {
   type Settings,
   type VerdictPlacement,
 } from '../domain/settings'
-import { BUILD_ID } from '../pwa'
 
 const PLACEMENT_ICONS: Record<VerdictPlacement, ComponentType<{ readonly size?: number }>> = {
   top: LayoutTopIcon,
@@ -103,7 +103,7 @@ export const SettingsScreen = ({
           </button>
         </div>
 
-        <div className="build-id">{BUILD_ID}</div>
+        <div className="build-id">{BUILD_TIME}</div>
       </div>
 
       {confirmingClear && (

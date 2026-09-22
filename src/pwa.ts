@@ -3,8 +3,6 @@ import { registerSW } from 'virtual:pwa-register'
 
 const CHECK_INTERVAL_MS = 60 * 60 * 1000
 
-export const BUILD_ID = __BUILD_ID__
-
 export const isStandalone =
   window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true
 

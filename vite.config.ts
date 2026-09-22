@@ -1,15 +1,15 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { defineConfig } from 'vitest/config'
 
 const base = '/mp/'
 
-const buildId = new Date().toISOString().slice(0, 16).replace('T', ' ')
+const builtAt = new Date().toISOString()
 
 export default defineConfig({
   base,
   define: {
-    __BUILD_ID__: JSON.stringify(buildId),
+    __BUILT_AT__: JSON.stringify(builtAt),
   },
   plugins: [
     react(),
@@ -40,4 +40,7 @@ export default defineConfig({
       },
     }),
   ],
+  test: {
+    env: { TZ: 'Europe/Amsterdam' },
+  },
 })
