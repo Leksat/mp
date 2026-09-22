@@ -11,7 +11,7 @@ interface FactSheetProps {
 
 export const FactSheet = ({ fact, progress, onForget, onClose }: FactSheetProps) => {
   const streak = factStreak(progress, fact)
-  const required = requiredStreak(progress, fact)
+  const required = requiredStreak(fact)
   const pipTone = (index: number): number => Math.min(3, Math.ceil(((index + 1) / required) * 3))
 
   return (

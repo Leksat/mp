@@ -45,7 +45,7 @@ describe('reaching learned', () => {
   it('never advances past the requirement', () => {
     const fact = toFact(2, 6)
     const progress = answerTimes(emptyProgress(), fact, 9, true)
-    expect(factStreak(progress, fact)).toBe(requiredStreak(progress, fact))
+    expect(factStreak(progress, fact)).toBe(requiredStreak(fact))
   })
 })
 
@@ -60,41 +60,37 @@ describe('missing a fact', () => {
   it('costs a rule fact a single rep it wins straight back', () => {
     const { fact, after } = missedOnce(1, 6)
     expect(factStreak(after, fact)).toBe(0)
-    expect(requiredStreak(after, fact)).toBe(1)
     expect(factState(recordAnswer(after, fact, true), fact)).toBe('learned')
   })
 
   it('keeps most of a hard fact instead of resetting it', () => {
     const { fact, after } = missedOnce(7, 8)
     expect(factStreak(after, fact)).toBe(3)
-    expect(requiredStreak(after, fact)).toBe(6)
   })
 
-  it('raises the requirement only after repeated misses', () => {
-    const fact = toFact(1, 6)
-    const twice = answerTimes(emptyProgress(), fact, 2, false)
-    expect(requiredStreak(twice, fact)).toBe(1)
-    expect(requiredStreak(recordAnswer(twice, fact, false), fact)).toBe(2)
+  it('never changes what a fact requires', () => {
+    const fact = toFact(7, 8)
+    const before = requiredStreak(fact)
+    answerTimes(emptyProgress(), fact, 40, false)
+    expect(requiredStreak(fact)).toBe(before)
   })
 
-  it('never lets the requirement run away', () => {
+  it('cannot push a streak below zero', () => {
     const fact = toFact(7, 8)
     const progress = answerTimes(emptyProgress(), fact, 40, false)
-    expect(requiredStreak(progress, fact)).toBeLessThanOrEqual(8)
     expect(factStreak(progress, fact)).toBe(0)
   })
 })
 
-describe('twin credit', () => {
-  it('gives a started twin half a step', () => {
-    const fact = toFact(4, 7)
+describe('the twin fact', () => {
+  it('is left alone entirely', () => {
     const twin = toFact(7, 4)
     const started = recordAnswer(emptyProgress(), twin, true)
-    const after = recordAnswer(started, fact, true)
-    expect(factStreak(after, twin)).toBeGreaterThan(factStreak(started, twin))
+    const after = recordAnswer(started, toFact(4, 7), true)
+    expect(factStreak(after, twin)).toBe(factStreak(started, twin))
   })
 
-  it('leaves an untouched twin untouched', () => {
+  it('stays untouched when its mirror is answered', () => {
     const after = recordAnswer(emptyProgress(), toFact(4, 7), true)
     expect(factState(after, toFact(7, 4))).toBe('untouched')
   })
@@ -124,7 +120,7 @@ describe('the score', () => {
     expect(learnedPercent(everything)).toBe(100)
   })
 
-  it('does not shrink when a fact gets harder', () => {
+  it('returns to where it was after a miss is made good', () => {
     const fact = toFact(7, 8)
     const learned = answerTimes(emptyProgress(), fact, 5, true)
     const missed = answerTimes(learned, fact, 3, false)
@@ -161,7 +157,6 @@ describe('migrating from v2', () => {
   })
 
   it('carries the base requirement over, not the legacy three', () => {
-    const progress = fromLegacy(legacy)
-    expect(requiredStreak(progress, toFact(1, 4))).toBe(baseRequiredStreak(toFact(1, 4)))
+    expect(factStreak(fromLegacy(legacy), toFact(1, 4))).toBe(baseRequiredStreak(toFact(1, 4)))
   })
 })

@@ -24,12 +24,11 @@ The number of ✓ a fact needs is not the same for every fact.
 - Reps to learned depend on the fact: 1 for `×1` and `×10` (rules, not memories), 2 for ties,
   `×2`, `×5` and `×9` (pattern-supported), 5 for the hard core (`3×7 3×8 4×6 4×7 4×8 6×7 6×8 7×8`
   and their twins), 3 for the rest.
-- The requirement adapts: every 3 misses on a fact permanently add a third of its base requirement,
-  up to 8. The hardcoded tiers are only a cold start; the kid's own errors decide the rest.
+  What a fact requires never changes. Nothing adapts behind the kid's back.
 - A ✗ drops the streak by a third of the requirement, at least 1, rather than to zero. Penalties
   stay proportional to the fact: one slip on `1 × 6` costs its single rep and is won back with the
-  next ✓, while `7 × 8` goes from 5/5 to 3/6.
-- A ✓ gives the twin fact half a step, but only once the twin is already in progress.
+  next ✓, while `7 × 8` goes from 5/5 to 3/5.
+- `7 × 8` and `8 × 7` are wholly separate. Answering one never moves the other.
 - Green means never again. A learned fact is never served while any fact is still unlearned;
   only a ✗ can bring it back, and only the kid can cause that. There are no spaced reviews.
 - At most 7 facts are in progress at a time; the rest stay untouched until a slot frees up. New
