@@ -35,7 +35,8 @@ export const App = () => {
     if (updateReady && justOpened) installUpdate()
   }, [updateReady, justOpened])
 
-  const celebrating = !progress.celebrated && learnedCount(progress) === ALL_FACTS.length
+  const tableFinished = learnedCount(progress) === ALL_FACTS.length
+  const celebrating = !progress.celebrated && tableFinished
   const stopCelebrating = useCallback(() => setProgress(withCelebrated), [])
   const onForget = (fact: Fact) => setProgress((current) => forgetFact(current, fact))
   const onClearProgress = () => setProgress(emptyProgress())
@@ -67,7 +68,9 @@ export const App = () => {
         badge={updateReady ? 'settings' : undefined}
         onSelect={setScreen}
       />
-      {firework > 0 && <Firework key={firework} onDone={() => setFirework(0)} />}
+      {firework > 0 && (
+        <Firework key={firework} bursts={tableFinished ? 3 : 1} onDone={() => setFirework(0)} />
+      )}
       {celebrating && <Confetti onDone={stopCelebrating} />}
       <div className="rotate-hint" aria-label="rotate to portrait">
         <RotateIcon size={72} />
