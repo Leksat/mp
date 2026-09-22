@@ -1,12 +1,10 @@
 import { ALL_FACTS, areConfusable, factKey, INTRODUCTION_ORDER, type Fact } from './facts'
-import { factProgress, factState, isDueForReview, today, type Progress } from './progress'
+import { factProgress, factState, type Progress } from './progress'
 
 export const COOLDOWN_CARDS = 5
 
 const CONFUSION_WINDOW = 2
 const WORKING_SET = 7
-const REVIEW_SHARE = 0.2
-const EARLY_REVIEW_SHARE = 0.25
 const MISS_BOOST = 3
 const MISS_DECAY_CARDS = 20
 
@@ -37,15 +35,6 @@ const pickLeastRecentlySeen: Picker = (facts, progress) =>
       : oldest,
   )
 
-const dueDayOf = (progress: Progress, fact: Fact): number =>
-  factProgress(progress, fact)?.dueDay ?? Infinity
-
-const pickSoonestDue: Picker = (facts, progress, random) => {
-  const bySoonest = [...facts].sort((one, other) => dueDayOf(progress, one) - dueDayOf(progress, other))
-  const head = bySoonest.slice(0, Math.max(1, Math.ceil(bySoonest.length * EARLY_REVIEW_SHARE)))
-  return pickLeastRecentlySeen(head, progress, random)
-}
-
 const workingSet = (progress: Progress): readonly Fact[] => {
   const started = ALL_FACTS.filter((fact) => factState(progress, fact) === 'learning')
   const slots = Math.max(0, WORKING_SET - started.length)
@@ -68,25 +57,14 @@ export const pickFact = (
   recent: readonly Fact[],
   random: () => number = Math.random,
 ): Fact => {
-  const day = today()
-  const review = {
-    facts: ALL_FACTS.filter((fact) => isDueForReview(progress, fact, day)),
-    pick: pickLeastRecentlySeen,
-  }
-  const drill = { facts: workingSet(progress), pick: pickWeighted }
-  const reviewFirst = drill.facts.length === 0 || random() < REVIEW_SHARE
-  const pools = (reviewFirst ? [review, drill] : [drill, review]).map((pool) => ({
-    ...pool,
-    facts: withoutRecent(pool.facts, recent),
-  }))
-
-  for (const relax of [unconfused, (facts: readonly Fact[]) => facts]) {
-    for (const pool of pools) {
-      const candidates = relax(pool.facts, recent)
-      if (candidates.length > 0) return pool.pick(candidates, progress, random)
-    }
+  const pool = workingSet(progress)
+  if (pool.length > 0) {
+    const window = recent.slice(0, Math.min(COOLDOWN_CARDS, pool.length - 1))
+    const rested = withoutRecent(pool, window)
+    const candidates = unconfused(rested, window)
+    return pickWeighted(candidates.length > 0 ? candidates : rested, progress, random)
   }
 
   const rested = withoutRecent(ALL_FACTS, recent)
-  return pickSoonestDue(rested.length > 0 ? rested : ALL_FACTS, progress, random)
+  return pickLeastRecentlySeen(rested.length > 0 ? rested : ALL_FACTS, progress, random)
 }

@@ -6,7 +6,6 @@ import {
   fromLegacy,
   isLearned,
   recordAnswer,
-  today,
   type FactProgress,
   type Progress,
 } from './progress'
@@ -31,7 +30,7 @@ const always = () => true
 
 describe('picking the next card', () => {
   it('never repeats a fact within the cooldown', () => {
-    const { seen } = drill(300, always)
+    const { seen } = drill(300, (fact) => fact.left + fact.right < 8)
     for (const [index, fact] of seen.entries()) {
       const window = seen.slice(Math.max(0, index - COOLDOWN_CARDS), index)
       expect(window.map(factKey)).not.toContain(factKey(fact))
@@ -39,11 +38,11 @@ describe('picking the next card', () => {
   })
 
   it('prefers a candidate that is not confusable with the last card', () => {
-    const settled = { streak: 9, misses: 0, lastSeenTick: 0, lastMissedTick: null, box: 4 }
+    const settled = { streak: 9, misses: 0, lastSeenTick: 0, lastMissedTick: null }
     const facts: Record<string, FactProgress> = Object.fromEntries(
-      ALL_FACTS.map((fact) => [factKey(fact), { ...settled, dueDay: today() + 99 }]),
+      ALL_FACTS.map((fact) => [factKey(fact), settled]),
     )
-    const started = { streak: 1, misses: 0, lastSeenTick: 0, lastMissedTick: null, box: 0, dueDay: null }
+    const started = { streak: 1, misses: 0, lastSeenTick: 0, lastMissedTick: null }
     facts['6x8'] = started
     facts['3x4'] = started
     const progress = { tick: 10, facts, celebrated: false }
@@ -88,48 +87,21 @@ describe('picking the next card', () => {
     expect(servedWhileLearned).toHaveLength(0)
   })
 
-  it('falls back to the next fact due, never to an ancient easy one', () => {
-    const settled = { streak: 9, misses: 0, lastSeenTick: 0, lastMissedTick: null, box: 4 }
-    const facts = Object.fromEntries(
-      ALL_FACTS.map((fact, index) => [
-        factKey(fact),
-        { ...settled, lastSeenTick: index, dueDay: today() + 200 - index },
-      ]),
-    )
-    const progress = { tick: 500, facts, celebrated: false }
-    const soonestQuarter = ALL_FACTS.slice(-25).map(factKey)
-
-    for (let attempt = 0; attempt < 20; attempt++) {
-      expect(soonestQuarter).toContain(factKey(pickFact(progress, [])))
-    }
-  })
-
-  it('varies the cards when there is nothing due and nothing to drill', () => {
-    const settled = { streak: 9, misses: 0, lastSeenTick: 0, lastMissedTick: null, box: 4 }
-    const facts: Record<string, FactProgress> = Object.fromEntries(
-      ALL_FACTS.map((fact, index) => [
-        factKey(fact),
-        { ...settled, lastSeenTick: index, dueDay: today() + 30 + index },
-      ]),
-    )
-    let progress: Progress = { tick: 500, facts, celebrated: false }
+  it('never serves a green fact while anything is still amber', () => {
+    let progress = emptyProgress()
     let recent: Fact[] = []
-    const seen: Fact[] = []
+    const greenServed: Fact[] = []
 
-    for (let card = 0; card < 20; card++) {
+    for (let card = 0; card < 400; card++) {
       const fact = pickFact(progress, recent)
-      seen.push(fact)
-      progress = recordAnswer(progress, fact, true)
+      if (isLearned(progress, fact) && ALL_FACTS.some((other) => !isLearned(progress, other))) {
+        greenServed.push(fact)
+      }
+      progress = recordAnswer(progress, fact, card % 7 !== 0)
       recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
     }
 
-    expect(new Set(seen.map(factKey)).size).toBeGreaterThan(10)
-  })
-
-  it('does not drill a learned fact that is not due yet', () => {
-    const { progress, seen } = drill(60, always)
-    const learnedWhenSeen = seen.filter((fact) => isLearned(progress, fact))
-    expect(learnedWhenSeen.length).toBeLessThan(seen.length)
+    expect(greenServed).toHaveLength(0)
   })
 
   it('always returns a fact even once everything is learned', () => {

@@ -5,11 +5,9 @@ import {
   factState,
   factStreak,
   fromLegacy,
-  isDueForReview,
   learnedPercent,
   recordAnswer,
   requiredStreak,
-  today,
   type Progress,
 } from './progress'
 
@@ -102,42 +100,17 @@ describe('twin credit', () => {
   })
 })
 
-describe('review scheduling', () => {
-  it('holds a freshly learned fact back until tomorrow', () => {
+describe('a learned fact', () => {
+  it('stays learned however many times it is answered', () => {
     const fact = toFact(3, 4)
-    const progress = answerTimes(emptyProgress(), fact, 3, true)
-    expect(isDueForReview(progress, fact, today())).toBe(false)
-    expect(isDueForReview(progress, fact, today() + 1)).toBe(true)
+    const progress = answerTimes(emptyProgress(), fact, 12, true)
+    expect(factState(progress, fact)).toBe('learned')
   })
 
-  it('pushes each review further out', () => {
-    const fact = toFact(3, 4)
-    let progress = answerTimes(emptyProgress(), fact, 3, true)
-    const firstDue = progress.facts['3x4'].dueDay
-    progress = recordAnswer(progress, fact, true)
-    expect(progress.facts['3x4'].dueDay).toBeGreaterThan(firstDue!)
-  })
-
-  it('pushes a review out every time, so a ✓ always buys distance', () => {
-    const fact = toFact(3, 4)
-    let progress = answerTimes(emptyProgress(), fact, 3, true)
-    let due = progress.facts['3x4'].dueDay!
-
-    for (let review = 0; review < 4; review++) {
-      progress = recordAnswer(progress, fact, true)
-      const next = progress.facts['3x4'].dueDay!
-      expect(next).toBeGreaterThan(due)
-      due = next
-    }
-  })
-
-  it('brings a missed review back sooner', () => {
-    const fact = toFact(3, 4)
-    let progress = answerTimes(emptyProgress(), fact, 3, true)
-    progress = answerTimes(progress, fact, 3, true)
-    const far = progress.facts['3x4'].box
-    progress = recordAnswer(progress, fact, false)
-    expect(progress.facts['3x4'].box).toBeLessThan(far)
+  it('only leaves green on a ✗', () => {
+    const fact = toFact(7, 8)
+    const learned = answerTimes(emptyProgress(), fact, 5, true)
+    expect(factState(recordAnswer(learned, fact, false), fact)).toBe('learning')
   })
 })
 
@@ -185,35 +158,6 @@ describe('migrating from v2', () => {
   it('drops keys that are not facts', () => {
     expect(Object.keys(fromLegacy(legacy))).not.toContain('rubbish')
     expect(fromLegacy(legacy).facts.rubbish).toBeUndefined()
-  })
-
-  it('spreads the review backlog instead of dumping it on day one', () => {
-    const many = Object.fromEntries(
-      ALL_FACTS.map((fact) => [
-        `${fact.left}x${fact.right}`,
-        { streak: 3, lastSeenTick: 1, lastMissedTick: null },
-      ]),
-    )
-    const progress = fromLegacy({ tick: 1, celebrated: false, facts: many })
-    const due = ALL_FACTS.filter((fact) => isDueForReview(progress, fact, today()))
-    expect(due.length).toBeLessThan(ALL_FACTS.length / 2)
-  })
-
-  it('gives every migrated learned fact a review date', () => {
-    const many = Object.fromEntries(
-      ALL_FACTS.map((fact) => [
-        `${fact.left}x${fact.right}`,
-        { streak: 2, lastSeenTick: 1, lastMissedTick: null },
-      ]),
-    )
-    const progress = fromLegacy({ tick: 1, celebrated: false, facts: many })
-    const learnedWithoutDate = ALL_FACTS.filter(
-      (fact) =>
-        factState(progress, fact) === 'learned' &&
-        progress.facts[`${fact.left}x${fact.right}`].dueDay === null,
-    )
-    expect(learnedWithoutDate).toHaveLength(0)
-    expect(ALL_FACTS.filter((fact) => isDueForReview(progress, fact, today()))).toHaveLength(0)
   })
 
   it('carries the base requirement over, not the legacy three', () => {

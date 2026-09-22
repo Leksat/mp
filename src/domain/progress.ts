@@ -4,20 +4,13 @@ const MAX_REQUIRED_STREAK = 8
 const MISSES_PER_EXTRA_REP = 3
 const MISS_PENALTY_SHARE = 3
 const TWIN_CREDIT = 0.5
-const REVIEW_INTERVAL_DAYS = [1, 3, 7, 16, 35]
-const LAST_BOX = REVIEW_INTERVAL_DAYS.length - 1
 const TONES = 3
-const DAY_MS = 24 * 60 * 60 * 1000
-
-export const today = (): number => Math.floor(Date.now() / DAY_MS)
 
 export interface FactProgress {
   readonly streak: number
   readonly misses: number
   readonly lastSeenTick: number
   readonly lastMissedTick: number | null
-  readonly box: number
-  readonly dueDay: number | null
 }
 
 export interface Progress {
@@ -77,63 +70,39 @@ export const learnedPercent = (progress: Progress): number => {
   return Math.floor((earned / SCORE_TOTAL) * 100)
 }
 
-export const isDueForReview = (progress: Progress, fact: Fact, day: number): boolean => {
-  const entry = factProgress(progress, fact)
-  return entry?.dueDay != null && entry.dueDay <= day && isLearned(progress, fact)
-}
-
-const scheduled = (entry: FactProgress, fact: Fact, day: number): FactProgress => {
-  if (entry.streak < requiredFor(fact, entry.misses)) return { ...entry, box: 0, dueDay: null }
-  return { ...entry, dueDay: day + REVIEW_INTERVAL_DAYS[entry.box] }
-}
-
 const answered = (
   previous: FactProgress | undefined,
   fact: Fact,
   knew: boolean,
   tick: number,
-  day: number,
 ): FactProgress => {
   const misses = (previous?.misses ?? 0) + (knew ? 0 : 1)
   const required = requiredFor(fact, misses)
   const streakBefore = previous?.streak ?? 0
-  const wasLearned = streakBefore >= requiredFor(fact, previous?.misses ?? 0)
-  const boxBefore = previous?.box ?? 0
-  const entry: FactProgress = {
+  return {
     streak: knew
       ? Math.min(streakBefore + 1, required)
       : Math.max(0, streakBefore - missPenalty(required)),
     misses,
     lastSeenTick: tick,
     lastMissedTick: knew ? (previous?.lastMissedTick ?? null) : tick,
-    box: knew
-      ? Math.min(boxBefore + (wasLearned ? 1 : 0), LAST_BOX)
-      : Math.max(boxBefore - 1, 0),
-    dueDay: previous?.dueDay ?? null,
   }
-  return scheduled(entry, fact, day)
 }
 
-const credited = (previous: FactProgress, fact: Fact, day: number): FactProgress =>
-  scheduled(
-    {
-      ...previous,
-      streak: Math.min(previous.streak + TWIN_CREDIT, requiredFor(fact, previous.misses)),
-    },
-    fact,
-    day,
-  )
+const credited = (previous: FactProgress, fact: Fact): FactProgress => ({
+  ...previous,
+  streak: Math.min(previous.streak + TWIN_CREDIT, requiredFor(fact, previous.misses)),
+})
 
 export const recordAnswer = (progress: Progress, fact: Fact, knew: boolean): Progress => {
   const tick = progress.tick + 1
-  const day = today()
   const facts = { ...progress.facts }
-  facts[factKey(fact)] = answered(progress.facts[factKey(fact)], fact, knew, tick, day)
+  facts[factKey(fact)] = answered(progress.facts[factKey(fact)], fact, knew, tick)
 
   const partner = twin(fact)
   const partnerEntry = progress.facts[factKey(partner)]
   if (knew && !isTie(fact) && partnerEntry && !isLearned(progress, partner)) {
-    facts[factKey(partner)] = credited(partnerEntry, partner, day)
+    facts[factKey(partner)] = credited(partnerEntry, partner)
   }
 
   return { ...progress, tick, facts }
@@ -159,25 +128,6 @@ export interface LegacyProgress {
 }
 
 const LEGACY_LEARNED_STREAK = 3
-const BACKLOG_SPREAD_DAYS = 7
-
-export const scheduleBacklog = (progress: Progress): Progress => {
-  const day = today()
-  let backlog = 0
-  const facts: Record<string, FactProgress> = {}
-
-  for (const [key, entry] of Object.entries(progress.facts)) {
-    const fact = parseFactKey(key)
-    if (!fact) continue
-
-    const unscheduled = entry.dueDay === null && entry.streak >= requiredFor(fact, entry.misses)
-    facts[key] = unscheduled
-      ? { ...entry, dueDay: day + 1 + (backlog++ % BACKLOG_SPREAD_DAYS) }
-      : entry
-  }
-
-  return { ...progress, facts }
-}
 
 export const fromLegacy = (legacy: LegacyProgress): Progress => {
   const facts: Record<string, FactProgress> = {}
@@ -193,14 +143,8 @@ export const fromLegacy = (legacy: LegacyProgress): Progress => {
       misses: 0,
       lastSeenTick: entry.lastSeenTick ?? 0,
       lastMissedTick: entry.lastMissedTick ?? null,
-      box: 0,
-      dueDay: null,
     }
   }
 
-  return scheduleBacklog({
-    tick: legacy.tick ?? 0,
-    facts,
-    celebrated: legacy.celebrated ?? false,
-  })
+  return { tick: legacy.tick ?? 0, facts, celebrated: legacy.celebrated ?? false }
 }

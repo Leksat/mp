@@ -30,16 +30,13 @@ The number of ✓ a fact needs is not the same for every fact.
   stay proportional to the fact: one slip on `1 × 6` costs its single rep and is won back with the
   next ✓, while `7 × 8` goes from 5/5 to 3/6.
 - A ✓ gives the twin fact half a step, but only once the twin is already in progress.
-- Learned facts come back on a Leitner schedule of 1, 3, 7, 16 and 35 days, one box up per correct
-  review, one box down on a ✗ — a right answer always buys distance from the fact.
-- A learned fact is served only on or after its due date. When there is nothing left to drill and
-  nothing due, the card comes from the quarter of the table due soonest, least recently seen
-  first, so an idle day still varies.
+- Green means never again. A learned fact is never served while any fact is still unlearned;
+  only a ✗ can bring it back, and only the kid can cause that. There are no spaced reviews.
 - At most 7 facts are in progress at a time; the rest stay untouched until a slot frees up. New
   facts are introduced easiest first.
-- Card selection is weighted: recently missed facts come back sooner, roughly every fifth card is
-  a learned fact that is due, no fact repeats within 5 cards, and confusable facts (sharing a
-  factor, or with products within 2) stay apart within 2 cards.
+- Card selection is weighted: recently missed facts come back sooner, no fact repeats within 5
+  cards, and confusable facts (sharing a factor other than 1 or 10, or with products within 2)
+  stay apart within 2 cards. The cooldown shrinks if fewer facts are left in play than it blocks.
 - A session is a fixed number of cards, 20 by default. A bar on the far edge from the ✓ / ✗
   buttons fills with every answer, ✓ or ✗ alike. The last answer of a session switches to the
   table screen; going back to the cards tab starts a new one. The count lives in memory only.
