@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from 'react'
-import { type Fact } from './domain/facts'
-import { recordAnswer, type Progress } from './domain/progress'
+import { ALL_FACTS, type Fact } from './domain/facts'
+import { isLearned, recordAnswer, type Progress } from './domain/progress'
 import { COOLDOWN_CARDS, pickFact } from './domain/selection'
 
 export interface Card {
@@ -33,7 +33,8 @@ export const useDrill = (
   const answer = (knew: boolean) => {
     const updated = recordAnswer(progress, card.fact, knew)
     const updatedRecent = [card.fact, ...recent].slice(0, COOLDOWN_CARDS)
-    const done = answered + 1 >= sessionLength
+    const tableFinished = ALL_FACTS.every((fact) => isLearned(updated, fact))
+    const done = tableFinished || answered + 1 >= sessionLength
 
     setProgress(updated)
     setRecent(updatedRecent)

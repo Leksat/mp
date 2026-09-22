@@ -36,9 +36,11 @@ The number of ✓ a fact needs is not the same for every fact.
 - Card selection is weighted: recently missed facts come back sooner, no fact repeats within 5
   cards, and confusable facts (sharing a factor other than 1 or 10, or with products within 2)
   stay apart within 2 cards. The cooldown shrinks if fewer facts are left in play than it blocks.
-- A session is a fixed number of cards, 20 by default. A bar on the far edge from the ✓ / ✗
-  buttons fills with every answer, ✓ or ✗ alike. The last answer of a session switches to the
-  table screen; going back to the cards tab starts a new one. The count lives in memory only.
+- A session is a fixed number of cards, 20 by default, and ends early the moment the last fact
+  turns green — no round is ever padded with facts the kid already knows. A bar on the far edge
+  from the ✓ / ✗ buttons fills with every answer, ✓ or ✗ alike. The last answer of a session
+  switches to the table screen; going back to the cards tab starts a new one. The count lives in
+  memory only.
 - Finishing a session sets off a short emoji firework. One emoji is drawn at random per session
   and every spark in the burst is that same emoji, so the kid gets to wonder which one is next.
 - The table screen shows one number: streak points earned as a percentage, floored. A fact is
