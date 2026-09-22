@@ -119,12 +119,34 @@ describe('review scheduling', () => {
     expect(isDueForReview(progress, fact, today() + 1)).toBe(true)
   })
 
-  it('pushes each fluent review further out', () => {
+  it('pushes each review further out', () => {
     const fact = toFact(3, 4)
     let progress = answerTimes(emptyProgress(), fact, 3, true, true)
     const firstDue = progress.facts['3x4'].dueDay
     progress = recordAnswer(progress, fact, true, true)
     expect(progress.facts['3x4'].dueDay).toBeGreaterThan(firstDue!)
+  })
+
+  it('pushes a slow review out too, so a right answer always buys distance', () => {
+    const fact = toFact(3, 4)
+    let progress = answerTimes(emptyProgress(), fact, 3, true, true)
+    let due = progress.facts['3x4'].dueDay!
+
+    for (let review = 0; review < 4; review++) {
+      progress = recordAnswer(progress, fact, true, false)
+      const next = progress.facts['3x4'].dueDay!
+      expect(next).toBeGreaterThan(due)
+      due = next
+    }
+  })
+
+  it('brings a missed review back sooner', () => {
+    const fact = toFact(3, 4)
+    let progress = answerTimes(emptyProgress(), fact, 3, true, true)
+    progress = answerTimes(progress, fact, 3, true, true)
+    const far = progress.facts['3x4'].box
+    progress = recordAnswer(progress, fact, false, false)
+    expect(progress.facts['3x4'].box).toBeLessThan(far)
   })
 })
 

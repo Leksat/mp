@@ -97,9 +97,33 @@ describe('picking the next card', () => {
       ]),
     )
     const progress = { tick: 500, facts, celebrated: false }
-    const soonest = ALL_FACTS[ALL_FACTS.length - 1]
+    const soonestQuarter = ALL_FACTS.slice(-25).map(factKey)
 
-    expect(factKey(pickFact(progress, []))).toBe(factKey(soonest))
+    for (let attempt = 0; attempt < 20; attempt++) {
+      expect(soonestQuarter).toContain(factKey(pickFact(progress, [])))
+    }
+  })
+
+  it('varies the cards when there is nothing due and nothing to drill', () => {
+    const settled = { streak: 9, misses: 0, lastSeenTick: 0, lastMissedTick: null, box: 4 }
+    const facts: Record<string, FactProgress> = Object.fromEntries(
+      ALL_FACTS.map((fact, index) => [
+        factKey(fact),
+        { ...settled, lastSeenTick: index, dueDay: today() + 30 + index },
+      ]),
+    )
+    let progress: Progress = { tick: 500, facts, celebrated: false }
+    let recent: Fact[] = []
+    const seen: Fact[] = []
+
+    for (let card = 0; card < 20; card++) {
+      const fact = pickFact(progress, recent)
+      seen.push(fact)
+      progress = recordAnswer(progress, fact, true, false)
+      recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
+    }
+
+    expect(new Set(seen.map(factKey)).size).toBeGreaterThan(10)
   })
 
   it('does not drill a learned fact that is not due yet', () => {

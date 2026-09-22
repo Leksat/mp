@@ -109,7 +109,7 @@ const answered = (
     lastSeenTick: tick,
     lastMissedTick: knew ? (previous?.lastMissedTick ?? null) : tick,
     box: knew
-      ? Math.min(boxBefore + (wasLearned && fluent ? 1 : 0), LAST_BOX)
+      ? Math.min(boxBefore + (wasLearned ? 1 : 0), LAST_BOX)
       : Math.max(boxBefore - 1, 0),
     dueDay: previous?.dueDay ?? null,
   }

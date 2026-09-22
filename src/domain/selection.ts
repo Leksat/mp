@@ -6,6 +6,7 @@ export const COOLDOWN_CARDS = 5
 const CONFUSION_WINDOW = 2
 const WORKING_SET = 7
 const REVIEW_SHARE = 0.2
+const EARLY_REVIEW_SHARE = 0.25
 const MISS_BOOST = 3
 const MISS_DECAY_CARDS = 20
 
@@ -36,13 +37,14 @@ const pickLeastRecentlySeen: Picker = (facts, progress) =>
       : oldest,
   )
 
-const pickSoonestDue: Picker = (facts, progress) =>
-  facts.reduce((soonest, fact) =>
-    (factProgress(progress, fact)?.dueDay ?? Infinity) <
-    (factProgress(progress, soonest)?.dueDay ?? Infinity)
-      ? fact
-      : soonest,
-  )
+const dueDayOf = (progress: Progress, fact: Fact): number =>
+  factProgress(progress, fact)?.dueDay ?? Infinity
+
+const pickSoonestDue: Picker = (facts, progress, random) => {
+  const bySoonest = [...facts].sort((one, other) => dueDayOf(progress, one) - dueDayOf(progress, other))
+  const head = bySoonest.slice(0, Math.max(1, Math.ceil(bySoonest.length * EARLY_REVIEW_SHARE)))
+  return pickLeastRecentlySeen(head, progress, random)
+}
 
 const workingSet = (progress: Progress): readonly Fact[] => {
   const started = ALL_FACTS.filter((fact) => factState(progress, fact) === 'learning')
