@@ -19,8 +19,9 @@ A parent holds the phone, the kid says the answer aloud.
 
 The number of ✓ a fact needs is not the same for every fact, and only fast answers count.
 
-- Fluency: an answer given before the 3 second auto-reveal counts as fluent. A slow ✓ holds the
-  streak but does not advance it — a kid who counts on fingers is not retrieving the fact.
+- Fluency: an answer given before the 3 second auto-reveal counts as fluent and is worth a full
+  step. A slow ✓ is worth half a step — a kid who counts on fingers is not retrieving the fact,
+  but the round must always move forward.
 - Reps to learned depend on the fact: 1 for `×1` and `×10` (rules, not memories), 2 for ties,
   `×2`, `×5` and `×9` (pattern-supported), 5 for the hard core (`3×7 3×8 4×6 4×7 4×8 6×7 6×8 7×8`
   and their twins), 3 for the rest.
@@ -31,7 +32,8 @@ The number of ✓ a fact needs is not the same for every fact, and only fast ans
   next ✓, while `7 × 8` goes from 5/5 to 3/6.
 - A fluent ✓ gives the twin fact half a step, but only once the twin is already in progress.
 - Learned facts come back on a Leitner schedule of 1, 3, 7, 16 and 35 days, one box up per fluent
-  review, one box down on a ✗.
+  review, one box down on a ✗. A learned fact is served only on or after its due date; when there
+  is nothing left to drill and nothing due, the card is the fact due soonest.
 - At most 7 facts are in progress at a time; the rest stay untouched until a slot frees up. New
   facts are introduced easiest first.
 - Card selection is weighted: recently missed facts come back sooner, roughly every fifth card is
@@ -62,6 +64,7 @@ apps are exempt.
 ```sh
 npm install
 npm run dev
+npm test        # vitest, covers the whole learning algorithm
 npm run build
 npm run icons   # regenerates public/*.png from scripts/generate-icons.mjs
 ```

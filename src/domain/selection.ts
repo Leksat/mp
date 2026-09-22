@@ -36,6 +36,14 @@ const pickLeastRecentlySeen: Picker = (facts, progress) =>
       : oldest,
   )
 
+const pickSoonestDue: Picker = (facts, progress) =>
+  facts.reduce((soonest, fact) =>
+    (factProgress(progress, fact)?.dueDay ?? Infinity) <
+    (factProgress(progress, soonest)?.dueDay ?? Infinity)
+      ? fact
+      : soonest,
+  )
+
 const workingSet = (progress: Progress): readonly Fact[] => {
   const started = ALL_FACTS.filter((fact) => factState(progress, fact) === 'learning')
   const slots = Math.max(0, WORKING_SET - started.length)
@@ -48,21 +56,9 @@ const workingSet = (progress: Progress): readonly Fact[] => {
 const withoutRecent = (facts: readonly Fact[], recent: readonly Fact[]): readonly Fact[] =>
   facts.filter((fact) => !recent.some((seen) => factKey(seen) === factKey(fact)))
 
-const choose = (
-  facts: readonly Fact[],
-  recent: readonly Fact[],
-  progress: Progress,
-  pick: Picker,
-  random: () => number,
-): Fact | undefined => {
-  const unseen = withoutRecent(facts, recent)
+const unconfused = (facts: readonly Fact[], recent: readonly Fact[]): readonly Fact[] => {
   const confusing = recent.slice(0, CONFUSION_WINDOW)
-  const distinct = unseen.filter((fact) => !confusing.some((seen) => areConfusable(seen, fact)))
-
-  for (const pool of [distinct, unseen, facts]) {
-    if (pool.length > 0) return pick(pool, progress, random)
-  }
-  return undefined
+  return facts.filter((fact) => !confusing.some((seen) => areConfusable(seen, fact)))
 }
 
 export const pickFact = (
@@ -77,11 +73,18 @@ export const pickFact = (
   }
   const drill = { facts: workingSet(progress), pick: pickWeighted }
   const reviewFirst = drill.facts.length === 0 || random() < REVIEW_SHARE
+  const pools = (reviewFirst ? [review, drill] : [drill, review]).map((pool) => ({
+    ...pool,
+    facts: withoutRecent(pool.facts, recent),
+  }))
 
-  for (const pool of reviewFirst ? [review, drill] : [drill, review]) {
-    const chosen = choose(pool.facts, recent, progress, pool.pick, random)
-    if (chosen) return chosen
+  for (const relax of [unconfused, (facts: readonly Fact[]) => facts]) {
+    for (const pool of pools) {
+      const candidates = relax(pool.facts, recent)
+      if (candidates.length > 0) return pool.pick(candidates, progress, random)
+    }
   }
+
   const rested = withoutRecent(ALL_FACTS, recent)
-  return pickLeastRecentlySeen(rested.length > 0 ? rested : ALL_FACTS, progress, random)
+  return pickSoonestDue(rested.length > 0 ? rested : ALL_FACTS, progress, random)
 }

@@ -3,6 +3,7 @@ import { ALL_FACTS, baseRequiredStreak, factKey, isTie, parseFactKey, twin, type
 const MAX_REQUIRED_STREAK = 8
 const MISSES_PER_EXTRA_REP = 3
 const MISS_PENALTY_SHARE = 3
+const SLOW_CREDIT = 0.5
 const TWIN_CREDIT = 0.5
 const REVIEW_INTERVAL_DAYS = [1, 3, 7, 16, 35]
 const LAST_BOX = REVIEW_INTERVAL_DAYS.length - 1
@@ -79,7 +80,7 @@ export const learnedPercent = (progress: Progress): number => {
 
 export const isDueForReview = (progress: Progress, fact: Fact, day: number): boolean => {
   const entry = factProgress(progress, fact)
-  return entry !== undefined && isLearned(progress, fact) && (entry.dueDay ?? day) <= day
+  return entry?.dueDay != null && entry.dueDay <= day && isLearned(progress, fact)
 }
 
 const scheduled = (entry: FactProgress, fact: Fact, day: number): FactProgress => {
@@ -102,7 +103,7 @@ const answered = (
   const boxBefore = previous?.box ?? 0
   const entry: FactProgress = {
     streak: knew
-      ? Math.min(streakBefore + (fluent ? 1 : 0), required)
+      ? Math.min(streakBefore + (fluent ? 1 : SLOW_CREDIT), required)
       : Math.max(0, streakBefore - missPenalty(required)),
     misses,
     lastSeenTick: tick,
@@ -165,28 +166,48 @@ export interface LegacyProgress {
 }
 
 const LEGACY_LEARNED_STREAK = 3
-const MIGRATION_SPREAD_DAYS = 7
+const BACKLOG_SPREAD_DAYS = 7
+
+export const scheduleBacklog = (progress: Progress): Progress => {
+  const day = today()
+  let backlog = 0
+  const facts: Record<string, FactProgress> = {}
+
+  for (const [key, entry] of Object.entries(progress.facts)) {
+    const fact = parseFactKey(key)
+    if (!fact) continue
+
+    const unscheduled = entry.dueDay === null && entry.streak >= requiredFor(fact, entry.misses)
+    facts[key] = unscheduled
+      ? { ...entry, dueDay: day + 1 + (backlog++ % BACKLOG_SPREAD_DAYS) }
+      : entry
+  }
+
+  return { ...progress, facts }
+}
 
 export const fromLegacy = (legacy: LegacyProgress): Progress => {
-  const day = today()
   const facts: Record<string, FactProgress> = {}
-  let learnedSoFar = 0
 
   for (const [key, entry] of Object.entries(legacy.facts ?? {})) {
     const fact = parseFactKey(key)
     if (!fact) continue
 
     const required = requiredFor(fact, 0)
-    const wasLearned = (entry.streak ?? 0) >= LEGACY_LEARNED_STREAK
+    const streak = (entry.streak ?? 0) >= LEGACY_LEARNED_STREAK ? required : (entry.streak ?? 0)
     facts[key] = {
-      streak: wasLearned ? required : Math.min(entry.streak ?? 0, required),
+      streak: Math.min(streak, required),
       misses: 0,
       lastSeenTick: entry.lastSeenTick ?? 0,
       lastMissedTick: entry.lastMissedTick ?? null,
       box: 0,
-      dueDay: wasLearned ? day + (learnedSoFar++ % MIGRATION_SPREAD_DAYS) : null,
+      dueDay: null,
     }
   }
 
-  return { tick: legacy.tick ?? 0, facts, celebrated: legacy.celebrated ?? false }
+  return scheduleBacklog({
+    tick: legacy.tick ?? 0,
+    facts,
+    celebrated: legacy.celebrated ?? false,
+  })
 }

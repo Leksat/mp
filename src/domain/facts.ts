@@ -51,13 +51,15 @@ const HARD_KEYS = new Set(
 const hasFactorIn = ({ left, right }: Fact, factors: readonly number[]): boolean =>
   factors.includes(left) || factors.includes(right)
 
+export const isRuleFact = (fact: Fact): boolean => hasFactorIn(fact, RULE_FACTORS)
+
 const REQUIRED_RULE = 1
 const REQUIRED_PATTERNED = 2
 const REQUIRED_PLAIN = 3
 const REQUIRED_HARD = 5
 
 export const baseRequiredStreak = (fact: Fact): number => {
-  if (hasFactorIn(fact, RULE_FACTORS)) return REQUIRED_RULE
+  if (isRuleFact(fact)) return REQUIRED_RULE
   if (isTie(fact) || hasFactorIn(fact, PATTERN_FACTORS)) return REQUIRED_PATTERNED
   return HARD_KEYS.has(factKey(fact)) ? REQUIRED_HARD : REQUIRED_PLAIN
 }
@@ -68,11 +70,15 @@ export const INTRODUCTION_ORDER: readonly Fact[] = [...ALL_FACTS].sort(
 
 const NEAR_PRODUCT = 2
 
-const sharesFactor = (one: Fact, other: Fact): boolean =>
-  one.left === other.left ||
-  one.left === other.right ||
-  one.right === other.left ||
-  one.right === other.right
+const sharesMemorisedFactor = (one: Fact, other: Fact): boolean =>
+  [
+    [one.left, other.left],
+    [one.left, other.right],
+    [one.right, other.left],
+    [one.right, other.right],
+  ].some(([mine, theirs]) => mine === theirs && !RULE_FACTORS.includes(mine))
 
 export const areConfusable = (one: Fact, other: Fact): boolean =>
-  sharesFactor(one, other) || Math.abs(product(one) - product(other)) <= NEAR_PRODUCT
+  !isRuleFact(one) &&
+  !isRuleFact(other) &&
+  (sharesMemorisedFactor(one, other) || Math.abs(product(one) - product(other)) <= NEAR_PRODUCT)
