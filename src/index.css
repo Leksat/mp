@@ -7,8 +7,10 @@
   --untouched: #e3e5ef;
   --untouched-text: #9aa0b8;
   --learned: #19b46b;
-  --cell-fill: #19b46b;
   --cell-ink: #05301c;
+  --warm-low: #eddcc8;
+  --warm-high: #e0730b;
+  --warm-ink: #4a2400;
   --danger: #e2565f;
   --warn: #d99b1f;
   --shadow: 0 10px 30px rgba(17, 22, 43, 0.1);
@@ -23,8 +25,10 @@
     --untouched: #1e2540;
     --untouched-text: #5a6284;
     --learned: #1aa967;
-    --cell-fill: #0d7145;
-    --cell-ink: #e6e9f5;
+    --cell-ink: #05301c;
+    --warm-low: #cfa778;
+    --warm-high: #d9760d;
+    --warm-ink: #331a00;
     --danger: #b8434b;
     --warn: #c79338;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
@@ -273,15 +277,14 @@ button {
   color: var(--untouched-text);
 }
 
-.cell.learning,
+.cell.learning {
+  color: var(--warm-ink);
+  background: color-mix(in oklab, var(--warm-high) var(--fill), var(--warm-low));
+}
+
 .cell.learned {
-  --hole: calc(100% - var(--fill));
   color: var(--cell-ink);
-  background: radial-gradient(
-    circle farthest-corner at center,
-    var(--untouched) calc(var(--hole) * 0.35),
-    var(--cell-fill) var(--hole)
-  );
+  background: var(--learned);
 }
 
 .sheet-backdrop {
