@@ -6,14 +6,14 @@
   --muted: #8b90a6;
   --untouched: #e3e5ef;
   --untouched-text: #9aa0b8;
-  --learned: #19b46b;
-  --step-0: #ffffe5;
-  --step-1: #f7fcb9;
-  --step-2: #d9f0a3;
-  --step-3: #addd8e;
-  --step-4: #78c679;
-  --step-5: #3a9f55;
-  --step-ink: #0f2d1a;
+  --streak-0: #d6a152;
+  --streak-1: #bcb44e;
+  --streak-2: #88b851;
+  --streak-3: #19b46b;
+  --streak-0-ink: #4a3300;
+  --streak-1-ink: #3f3a05;
+  --streak-2-ink: #24380a;
+  --streak-3-ink: #05301c;
   --danger: #e2565f;
   --warn: #d99b1f;
   --shadow: 0 10px 30px rgba(17, 22, 43, 0.1);
@@ -27,14 +27,10 @@
     --muted: #6d738e;
     --untouched: #1e2540;
     --untouched-text: #5a6284;
-    --learned: #1aa967;
-    --step-0: #18211d;
-    --step-1: #12291e;
-    --step-2: #0f3a23;
-    --step-3: #114e2a;
-    --step-4: #166832;
-    --step-5: #1d7a3c;
-    --step-ink: #e6f2e9;
+    --streak-0: #ae8d5b;
+    --streak-1: #938f53;
+    --streak-2: #7a9759;
+    --streak-3: #1aa967;
     --danger: #b8434b;
     --warn: #c79338;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
@@ -139,7 +135,7 @@ button {
 .session-fill {
   height: 100%;
   border-radius: 5px;
-  background: var(--learned);
+  background: var(--streak-3);
   transition: width 0.35s ease;
 }
 
@@ -233,7 +229,7 @@ button {
 }
 
 .verdict.knew {
-  background: var(--learned);
+  background: var(--streak-3);
 }
 
 .grid-screen {
@@ -249,7 +245,7 @@ button {
   text-align: center;
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--learned);
+  color: var(--streak-3);
 }
 
 .table {
@@ -279,31 +275,28 @@ button {
 
 .cell {
   font-weight: 600;
-  color: var(--step-ink);
+  background: var(--untouched);
+  color: var(--untouched-text);
 }
 
-.cell.step-0 {
-  background: var(--step-0);
+.cell.streak-0 {
+  background: var(--streak-0);
+  color: var(--streak-0-ink);
 }
 
-.cell.step-1 {
-  background: var(--step-1);
+.cell.streak-1 {
+  background: var(--streak-1);
+  color: var(--streak-1-ink);
 }
 
-.cell.step-2 {
-  background: var(--step-2);
+.cell.streak-2 {
+  background: var(--streak-2);
+  color: var(--streak-2-ink);
 }
 
-.cell.step-3 {
-  background: var(--step-3);
-}
-
-.cell.step-4 {
-  background: var(--step-4);
-}
-
-.cell.step-5 {
-  background: var(--step-5);
+.cell.streak-3 {
+  background: var(--streak-3);
+  color: var(--streak-3-ink);
 }
 
 .sheet-backdrop {
@@ -351,8 +344,16 @@ button {
   background: var(--untouched);
 }
 
-.pip.filled {
-  background: var(--learned);
+.pip.tone-1 {
+  background: var(--streak-1);
+}
+
+.pip.tone-2 {
+  background: var(--streak-2);
+}
+
+.pip.tone-3 {
+  background: var(--streak-3);
 }
 
 .sheet-actions {

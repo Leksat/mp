@@ -1,6 +1,7 @@
 import { ALL_FACTS, baseRequiredStreak, factKey, parseFactKey, type Fact } from './facts'
 
 const MISS_PENALTY_SHARE = 3
+const TONES = 3
 
 export interface FactProgress {
   readonly streak: number
@@ -38,8 +39,12 @@ export const isLearned = (progress: Progress, fact: Fact): boolean =>
 export const factStreak = (progress: Progress, fact: Fact): number =>
   Math.min(factProgress(progress, fact)?.streak ?? 0, requiredStreak(fact))
 
-export const factFill = (progress: Progress, fact: Fact): number =>
-  factStreak(progress, fact) / requiredStreak(fact)
+export const factTone = (progress: Progress, fact: Fact): number => {
+  const state = factState(progress, fact)
+  if (state === 'learned') return TONES
+  const ratio = factStreak(progress, fact) / requiredStreak(fact)
+  return Math.min(TONES - 1, Math.floor(ratio * TONES))
+}
 
 export const learnedCount = (progress: Progress): number =>
   ALL_FACTS.filter((fact) => isLearned(progress, fact)).length
