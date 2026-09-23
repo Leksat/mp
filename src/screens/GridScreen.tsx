@@ -12,13 +12,14 @@ interface TableStyle extends React.CSSProperties {
   readonly '--columns': number
 }
 
-interface CellStyle extends React.CSSProperties {
-  readonly '--fill': string
-}
+const TOP_STEP = 5
 
-const cellStyle = (progress: Progress, fact: Fact): CellStyle => ({
-  '--fill': `${factFill(progress, fact) * 100}%`,
-})
+const cellStep = (progress: Progress, fact: Fact): number => {
+  const state = factState(progress, fact)
+  if (state === 'untouched') return 0
+  if (state === 'learned') return TOP_STEP
+  return Math.min(TOP_STEP - 1, Math.max(1, Math.round(factFill(progress, fact) * TOP_STEP)))
+}
 
 const tableStyle: TableStyle = { '--columns': FACTORS.length + 1 }
 
@@ -46,8 +47,7 @@ export const GridScreen = ({ progress, onForget }: GridScreenProps) => {
               <button
                 type="button"
                 key={`cell-${row}-${column}`}
-                className={`cell ${factState(progress, fact)}`}
-                style={cellStyle(progress, fact)}
+                className={`cell step-${cellStep(progress, fact)}`}
                 onClick={() => setSelected(fact)}
                 aria-label={`${row} × ${column}`}
               >

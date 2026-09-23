@@ -7,10 +7,13 @@
   --untouched: #e3e5ef;
   --untouched-text: #9aa0b8;
   --learned: #19b46b;
-  --cell-ink: #05301c;
-  --warm-low: #eddcc8;
-  --warm-high: #e0730b;
-  --warm-ink: #4a2400;
+  --step-0: #ffffe5;
+  --step-1: #f7fcb9;
+  --step-2: #d9f0a3;
+  --step-3: #addd8e;
+  --step-4: #78c679;
+  --step-5: #3a9f55;
+  --step-ink: #0f2d1a;
   --danger: #e2565f;
   --warn: #d99b1f;
   --shadow: 0 10px 30px rgba(17, 22, 43, 0.1);
@@ -25,10 +28,13 @@
     --untouched: #1e2540;
     --untouched-text: #5a6284;
     --learned: #1aa967;
-    --cell-ink: #05301c;
-    --warm-low: #cfa778;
-    --warm-high: #d9760d;
-    --warm-ink: #331a00;
+    --step-0: #18211d;
+    --step-1: #12291e;
+    --step-2: #0f3a23;
+    --step-3: #114e2a;
+    --step-4: #166832;
+    --step-5: #1d7a3c;
+    --step-ink: #e6f2e9;
     --danger: #b8434b;
     --warn: #c79338;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
@@ -273,18 +279,31 @@ button {
 
 .cell {
   font-weight: 600;
-  background: var(--untouched);
-  color: var(--untouched-text);
+  color: var(--step-ink);
 }
 
-.cell.learning {
-  color: var(--warm-ink);
-  background: color-mix(in oklab, var(--warm-high) var(--fill), var(--warm-low));
+.cell.step-0 {
+  background: var(--step-0);
 }
 
-.cell.learned {
-  color: var(--cell-ink);
-  background: var(--learned);
+.cell.step-1 {
+  background: var(--step-1);
+}
+
+.cell.step-2 {
+  background: var(--step-2);
+}
+
+.cell.step-3 {
+  background: var(--step-3);
+}
+
+.cell.step-4 {
+  background: var(--step-4);
+}
+
+.cell.step-5 {
+  background: var(--step-5);
 }
 
 .sheet-backdrop {
