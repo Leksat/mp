@@ -6,14 +6,10 @@
   --muted: #8b90a6;
   --untouched: #e3e5ef;
   --untouched-text: #9aa0b8;
-  --streak-0: #d6a152;
-  --streak-1: #bcb44e;
-  --streak-2: #88b851;
-  --streak-3: #19b46b;
-  --streak-0-ink: #4a3300;
-  --streak-1-ink: #3f3a05;
-  --streak-2-ink: #24380a;
-  --streak-3-ink: #05301c;
+  --streak-start: #d6a152;
+  --streak-full: #19b46b;
+  --streak-start-ink: #4a3300;
+  --streak-full-ink: #05301c;
   --danger: #e2565f;
   --warn: #d99b1f;
   --shadow: 0 10px 30px rgba(17, 22, 43, 0.1);
@@ -27,10 +23,8 @@
     --muted: #6d738e;
     --untouched: #1e2540;
     --untouched-text: #5a6284;
-    --streak-0: #ae8d5b;
-    --streak-1: #938f53;
-    --streak-2: #7a9759;
-    --streak-3: #1aa967;
+    --streak-start: #ae8d5b;
+    --streak-full: #1aa967;
     --danger: #b8434b;
     --warn: #c79338;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
@@ -135,7 +129,7 @@ button {
 .session-fill {
   height: 100%;
   border-radius: 5px;
-  background: var(--streak-3);
+  background: var(--streak-full);
   transition: width 0.35s ease;
 }
 
@@ -229,7 +223,7 @@ button {
 }
 
 .verdict.knew {
-  background: var(--streak-3);
+  background: var(--streak-full);
 }
 
 .grid-screen {
@@ -245,7 +239,7 @@ button {
   text-align: center;
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--streak-3);
+  color: var(--streak-full);
 }
 
 .table {
@@ -274,29 +268,15 @@ button {
 }
 
 .cell {
+  --streak-share: calc(var(--streak-progress) * 100%);
   font-weight: 600;
+  background: color-mix(in oklch, var(--streak-full) var(--streak-share), var(--streak-start));
+  color: color-mix(in oklch, var(--streak-full-ink) var(--streak-share), var(--streak-start-ink));
+}
+
+.cell.untouched {
   background: var(--untouched);
   color: var(--untouched-text);
-}
-
-.cell.streak-0 {
-  background: var(--streak-0);
-  color: var(--streak-0-ink);
-}
-
-.cell.streak-1 {
-  background: var(--streak-1);
-  color: var(--streak-1-ink);
-}
-
-.cell.streak-2 {
-  background: var(--streak-2);
-  color: var(--streak-2-ink);
-}
-
-.cell.streak-3 {
-  background: var(--streak-3);
-  color: var(--streak-3-ink);
 }
 
 .sheet-backdrop {
@@ -344,16 +324,9 @@ button {
   background: var(--untouched);
 }
 
-.pip.tone-1 {
-  background: var(--streak-1);
-}
-
-.pip.tone-2 {
-  background: var(--streak-2);
-}
-
-.pip.tone-3 {
-  background: var(--streak-3);
+.pip.filled {
+  --streak-share: calc(var(--streak-progress) * 100%);
+  background: color-mix(in oklch, var(--streak-full) var(--streak-share), var(--streak-start));
 }
 
 .sheet-actions {

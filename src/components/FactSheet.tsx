@@ -12,7 +12,7 @@ interface FactSheetProps {
 export const FactSheet = ({ fact, progress, onForget, onClose }: FactSheetProps) => {
   const streak = factStreak(progress, fact)
   const required = requiredStreak(fact)
-  const pipTone = (index: number): number => Math.min(3, Math.ceil(((index + 1) / required) * 3))
+  const pipShare = (index: number): number => (index + 1) / required
 
   return (
     <div className="sheet-backdrop" onClick={onClose}>
@@ -25,7 +25,8 @@ export const FactSheet = ({ fact, progress, onForget, onClose }: FactSheetProps)
           {Array.from({ length: required }, (_, index) => (
             <span
               key={index}
-              className={index < streak ? `pip filled tone-${pipTone(index)}` : 'pip'}
+              className={index < streak ? 'pip filled' : 'pip'}
+              style={{ '--streak-progress': pipShare(index) }}
             />
           ))}
         </div>

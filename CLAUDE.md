@@ -46,8 +46,9 @@ The number of ✓ a fact needs is not the same for every fact.
 - The table screen shows one number: streak points earned as a percentage, floored. A fact is
   worth its cold-start requirement, so the denominator never moves and each ✓ moves the number,
   not just the last one.
-- The table screen colours every cell grey (untouched), then amber → yellow → lime → green as the
-  streak climbs towards that fact's own requirement. Tap a cell to see its streak or reset it.
+- The table screen colours every cell grey (untouched), then mixes amber → green in oklch by the
+  streak's share of that fact's own requirement, so every reachable streak has its own colour. Tap
+  a cell to see its streak or reset it.
 - The settings screen moves the ✓ / ✗ buttons above or below the card, sets the session length
   with a stepper (minimum 1, no maximum), and clears all progress after a confirmation.
 
