@@ -3,6 +3,12 @@ name: Deploy
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '.storybook/**'
+      - '**/*.stories.tsx'
+      - 'src/stories/**'
+      - 'src/__mocks__/**'
+      - '**/*.md'
   workflow_dispatch:
 
 permissions:
