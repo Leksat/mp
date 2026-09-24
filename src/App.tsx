@@ -9,6 +9,7 @@ import { loadProgress, loadSettings, saveProgress, saveSettings } from './domain
 import { installUpdate, isStandalone, useUpdateReady } from './pwa'
 import { CardScreen } from './screens/CardScreen'
 import { GridScreen } from './screens/GridScreen'
+import { PreviewScreen } from './screens/PreviewScreen'
 import { SettingsScreen } from './screens/SettingsScreen'
 import { useDrill } from './useDrill'
 import { useJustOpened } from './useJustOpened'
@@ -49,7 +50,10 @@ export const App = () => {
         </Suspense>
       )}
       <main className="screen">
-        {screen === 'cards' && (
+        {screen === 'cards' && drill.phase === 'preview' && (
+          <PreviewScreen drill={drill} verdictPlacement={settings.verdictPlacement} />
+        )}
+        {screen === 'cards' && drill.phase === 'cards' && (
           <CardScreen
             drill={drill}
             verdictPlacement={settings.verdictPlacement}

@@ -226,6 +226,33 @@ button {
   background: var(--streak-full);
 }
 
+.verdict.ready {
+  background: var(--indigo);
+}
+
+.preview-facts {
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+  align-items: baseline;
+  justify-items: center;
+  column-gap: 0.35em;
+  row-gap: 0.25em;
+  font-size: clamp(1.8rem, 9vw, 2.8rem);
+  font-weight: 600;
+}
+
+.preview-answer {
+  justify-self: start;
+  font-weight: 800;
+  color: var(--indigo);
+}
+
+@media (prefers-color-scheme: dark) {
+  .preview-answer {
+    color: #a5b0ff;
+  }
+}
+
 .grid-screen {
   flex: 1;
   display: flex;

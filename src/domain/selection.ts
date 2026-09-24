@@ -35,7 +35,7 @@ const pickLeastRecentlySeen: Picker = (facts, progress) =>
       : oldest,
   )
 
-const workingSet = (progress: Progress): readonly Fact[] => {
+export const workingSet = (progress: Progress): readonly Fact[] => {
   const started = ALL_FACTS.filter((fact) => factState(progress, fact) === 'learning')
   const slots = Math.max(0, WORKING_SET - started.length)
   const newcomers = INTRODUCTION_ORDER.filter(

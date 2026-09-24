@@ -36,6 +36,9 @@ The number of ✓ a fact needs is not the same for every fact.
 - Card selection is weighted: recently missed facts come back sooner, no fact repeats within 5
   cards, and confusable facts (sharing a factor other than 1 or 10, or with products within 2)
   stay apart within 2 cards. The cooldown shrinks if fewer facts are left in play than it blocks.
+- Every session opens with a preview: the facts currently in progress, with answers, in random
+  order, and a ▶ button to start. Nothing about selection changes — new facts can still join
+  mid-session as slots free up. The preview is skipped when nothing is in progress.
 - A session is a fixed number of cards, 20 by default, and ends early the moment the last fact
   turns green — no round is ever padded with facts the kid already knows. A bar on the far edge
   from the ✓ / ✗ buttons fills with every answer, ✓ or ✗ alike. The last answer of a session

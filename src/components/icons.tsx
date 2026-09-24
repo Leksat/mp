@@ -28,6 +28,12 @@ export const CrossIcon = ({ size }: IconProps) => (
   </Svg>
 )
 
+export const PlayIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <path d="M7 4.5v15L19.5 12z" fill="currentColor" />
+  </Svg>
+)
+
 export const RotateIcon = ({ size }: IconProps) => (
   <Svg size={size}>
     <rect x="9" y="9" width="6" height="12" rx="1.5" />

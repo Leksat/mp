@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { CheckIcon, CrossIcon } from '../components/icons'
 import { product } from '../domain/facts'
 import type { VerdictPlacement } from '../domain/settings'
-import type { Drill } from '../useDrill'
+import type { CardsDrill } from '../useDrill'
 
 interface CardScreenProps {
-  readonly drill: Drill
+  readonly drill: CardsDrill
   readonly verdictPlacement: VerdictPlacement
   readonly revealDelaySeconds: number
 }
