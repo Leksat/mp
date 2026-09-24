@@ -50,7 +50,11 @@ export const App = () => {
       )}
       <main className="screen">
         {screen === 'cards' && (
-          <CardScreen drill={drill} verdictPlacement={settings.verdictPlacement} />
+          <CardScreen
+            drill={drill}
+            verdictPlacement={settings.verdictPlacement}
+            revealDelaySeconds={settings.revealDelaySeconds}
+          />
         )}
         {screen === 'grid' && <GridScreen progress={progress} onForget={onForget} />}
         {screen === 'settings' && (

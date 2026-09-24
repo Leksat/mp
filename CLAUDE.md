@@ -12,7 +12,7 @@ A parent holds the phone, the kid says the answer aloud.
 
 - The app opens on the table screen, so the kid sees the overall progress first.
 - 100 facts, 1-10. `7 × 8` and `8 × 7` are tracked separately.
-- The answer auto-reveals after 3 seconds, or immediately when the card is tapped. The ✓ / ✗
+- The answer auto-reveals after 3 seconds (configurable), or immediately when the card is tapped. The ✓ / ✗
   buttons are live from the moment the card appears.
 
 ### Learning algorithm
@@ -50,7 +50,8 @@ The number of ✓ a fact needs is not the same for every fact.
   streak's share of that fact's own requirement, so every reachable streak has its own colour. Tap
   a cell to see its streak or reset it.
 - The settings screen moves the ✓ / ✗ buttons above or below the card, sets the session length
-  with a stepper (minimum 1, no maximum), and clears all progress after a confirmation.
+  and the auto-reveal delay in whole seconds with steppers (minimum 1, no maximum), and clears all
+  progress after a confirmation.
 
 Progress and settings live in `localStorage` and are written on every change.
 

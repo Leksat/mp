@@ -4,22 +4,22 @@ import { product } from '../domain/facts'
 import type { VerdictPlacement } from '../domain/settings'
 import type { Drill } from '../useDrill'
 
-const REVEAL_DELAY_MS = 3000
-
 interface CardScreenProps {
   readonly drill: Drill
   readonly verdictPlacement: VerdictPlacement
+  readonly revealDelaySeconds: number
 }
 
-export const CardScreen = ({ drill, verdictPlacement }: CardScreenProps) => {
+export const CardScreen = ({ drill, verdictPlacement, revealDelaySeconds }: CardScreenProps) => {
   const { card, answered, sessionLength, answer } = drill
   const [revealedCardId, setRevealedCardId] = useState<number | null>(null)
   const revealed = revealedCardId === card.id
+  const revealDelayMs = revealDelaySeconds * 1000
 
   useEffect(() => {
-    const timer = setTimeout(() => setRevealedCardId(card.id), REVEAL_DELAY_MS)
+    const timer = setTimeout(() => setRevealedCardId(card.id), revealDelayMs)
     return () => clearTimeout(timer)
-  }, [card.id])
+  }, [card.id, revealDelayMs])
 
   const { left, right } = card.fact
 
@@ -46,7 +46,7 @@ export const CardScreen = ({ drill, verdictPlacement }: CardScreenProps) => {
           <div
             key={card.id}
             className="timer-fill"
-            style={{ '--reveal-duration': `${REVEAL_DELAY_MS}ms` } as React.CSSProperties}
+            style={{ '--reveal-duration': `${revealDelayMs}ms` } as React.CSSProperties}
           />
         )}
       </div>

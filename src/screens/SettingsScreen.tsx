@@ -6,11 +6,12 @@ import {
   DownloadIcon,
   LayoutBottomIcon,
   LayoutTopIcon,
-  MinusIcon,
-  PlusIcon,
+  TimerIcon,
   TrashIcon,
 } from '../components/icons'
+import { Stepper } from '../components/Stepper'
 import {
+  MIN_REVEAL_DELAY_SECONDS,
   MIN_SESSION_LENGTH,
   VERDICT_PLACEMENTS,
   type Settings,
@@ -58,27 +59,23 @@ export const SettingsScreen = ({
         })}
       </div>
 
-      <div className="stepper">
-        <CardIcon size={30} />
-        <button
-          type="button"
-          className="stepper-button"
-          disabled={settings.sessionLength <= MIN_SESSION_LENGTH}
-          onClick={() => onChange({ ...settings, sessionLength: settings.sessionLength - 1 })}
-          aria-label="shorter session"
-        >
-          <MinusIcon size={24} />
-        </button>
-        <span className="stepper-value">{settings.sessionLength}</span>
-        <button
-          type="button"
-          className="stepper-button"
-          onClick={() => onChange({ ...settings, sessionLength: settings.sessionLength + 1 })}
-          aria-label="longer session"
-        >
-          <PlusIcon size={24} />
-        </button>
-      </div>
+      <Stepper
+        icon={CardIcon}
+        value={settings.sessionLength}
+        min={MIN_SESSION_LENGTH}
+        decreaseLabel="shorter session"
+        increaseLabel="longer session"
+        onChange={(sessionLength) => onChange({ ...settings, sessionLength })}
+      />
+
+      <Stepper
+        icon={TimerIcon}
+        value={settings.revealDelaySeconds}
+        min={MIN_REVEAL_DELAY_SECONDS}
+        decreaseLabel="reveal sooner"
+        increaseLabel="reveal later"
+        onChange={(revealDelaySeconds) => onChange({ ...settings, revealDelaySeconds })}
+      />
 
       <div className="settings-footer">
         <div className="footer-actions">

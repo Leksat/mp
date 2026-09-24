@@ -1,5 +1,11 @@
 import { emptyProgress, fromLegacy, type LegacyProgress, type Progress } from './progress'
-import { defaultSettings, isVerdictPlacement, toSessionLength, type Settings } from './settings'
+import {
+  defaultSettings,
+  isVerdictPlacement,
+  toRevealDelaySeconds,
+  toSessionLength,
+  type Settings,
+} from './settings'
 
 const PROGRESS_KEY = 'mp.progress.v3'
 const LEGACY_PROGRESS_KEY = 'mp.progress.v2'
@@ -44,6 +50,7 @@ export const loadSettings = (): Settings => {
   return {
     verdictPlacement: isVerdictPlacement(placement) ? placement : defaultSettings().verdictPlacement,
     sessionLength: toSessionLength(parsed?.sessionLength),
+    revealDelaySeconds: toRevealDelaySeconds(parsed?.revealDelaySeconds),
   }
 }
 

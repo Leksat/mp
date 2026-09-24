@@ -63,6 +63,13 @@ export const CardIcon = ({ size }: IconProps) => (
   </Svg>
 )
 
+export const TimerIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <circle cx="12" cy="13.5" r="7.5" />
+    <path d="M10 2.5h4M12 2.5V6M12 13.5V9.5" />
+  </Svg>
+)
+
 export const GearIcon = ({ size }: IconProps) => (
   <Svg size={size}>
     <circle cx="12" cy="12" r="3.2" />
