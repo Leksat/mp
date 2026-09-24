@@ -1,5 +1,5 @@
 import { ALL_FACTS, areConfusable, factKey, INTRODUCTION_ORDER, type Fact } from './facts'
-import { factProgress, factState, type Progress } from './progress'
+import { factProgress, factState, type FactState, type Progress } from './progress'
 
 export const COOLDOWN_CARDS = 5
 
@@ -35,14 +35,11 @@ const pickLeastRecentlySeen: Picker = (facts, progress) =>
       : oldest,
   )
 
-export const workingSet = (progress: Progress): readonly Fact[] => {
-  const started = ALL_FACTS.filter((fact) => factState(progress, fact) === 'learning')
-  const slots = Math.max(0, WORKING_SET - started.length)
-  const newcomers = INTRODUCTION_ORDER.filter(
-    (fact) => factState(progress, fact) === 'untouched',
-  ).slice(0, slots)
-  return [...started, ...newcomers]
-}
+const inState = (progress: Progress, state: FactState): readonly Fact[] =>
+  INTRODUCTION_ORDER.filter((fact) => factState(progress, fact) === state)
+
+export const workingSet = (progress: Progress): readonly Fact[] =>
+  [...inState(progress, 'learning'), ...inState(progress, 'untouched')].slice(0, WORKING_SET)
 
 const withoutRecent = (facts: readonly Fact[], recent: readonly Fact[]): readonly Fact[] =>
   facts.filter((fact) => !recent.some((seen) => factKey(seen) === factKey(fact)))

@@ -11,7 +11,7 @@ interface PreviewScreenProps {
 
 export const PreviewScreen = ({ drill, verdictPlacement }: PreviewScreenProps) => (
   <div className={`card-screen verdicts-${verdictPlacement}`}>
-    <div className="card">
+    <div className="card preview">
       <div className="preview-facts">
         {drill.facts.map((fact) => (
           <Fragment key={factKey(fact)}>

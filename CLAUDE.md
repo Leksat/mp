@@ -32,7 +32,8 @@ The number of ✓ a fact needs is not the same for every fact.
 - Green means never again. A learned fact is never served while any fact is still unlearned;
   only a ✗ can bring it back, and only the kid can cause that. There are no spaced reviews.
 - At most 7 facts are in progress at a time; the rest stay untouched until a slot frees up. New
-  facts are introduced easiest first.
+  facts are introduced easiest first. Started facts fill the slots before new ones, easiest first,
+  so progress carried over from older versions with more facts started still yields 7.
 - Card selection is weighted: recently missed facts come back sooner, no fact repeats within 5
   cards, and confusable facts (sharing a factor other than 1 or 10, or with products within 2)
   stay apart within 2 cards. The cooldown shrinks if fewer facts are left in play than it blocks.

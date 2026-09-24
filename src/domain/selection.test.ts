@@ -9,7 +9,7 @@ import {
   type FactProgress,
   type Progress,
 } from './progress'
-import { COOLDOWN_CARDS, pickFact } from './selection'
+import { COOLDOWN_CARDS, pickFact, workingSet } from './selection'
 
 const drill = (cards: number, knew: (fact: Fact) => boolean) => {
   let progress = emptyProgress()
@@ -58,6 +58,41 @@ describe('picking the next card', () => {
     const { progress } = drill(200, (fact) => fact.left + fact.right < 8)
     const started = ALL_FACTS.filter((fact) => factState(progress, fact) === 'learning')
     expect(started.length).toBeLessThanOrEqual(7)
+  })
+
+  it('caps the working set even when many facts are already in progress', () => {
+    const startedFacts = ALL_FACTS.filter((fact) => baseRequiredStreak(fact) > 1)
+    const progress: Progress = {
+      tick: 1,
+      celebrated: false,
+      facts: Object.fromEntries(
+        startedFacts.map((fact) => [factKey(fact), { streak: 0, lastSeenTick: 1, lastMissedTick: null }]),
+      ),
+    }
+
+    const inPlay = workingSet(progress)
+
+    expect(inPlay).toHaveLength(7)
+    expect(inPlay.every((fact) => factState(progress, fact) === 'learning')).toBe(true)
+    expect(inPlay.every((fact) => baseRequiredStreak(fact) === 2)).toBe(true)
+  })
+
+  it('serves only the working set', () => {
+    const progress: Progress = {
+      tick: 1,
+      celebrated: false,
+      facts: Object.fromEntries(
+        ALL_FACTS.map((fact) => [factKey(fact), { streak: 0, lastSeenTick: 1, lastMissedTick: null }]),
+      ),
+    }
+    const inPlay = workingSet(progress).map(factKey)
+    let recent: Fact[] = []
+
+    for (let card = 0; card < 50; card++) {
+      const fact = pickFact(progress, recent)
+      expect(inPlay).toContain(factKey(fact))
+      recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
+    }
   })
 
   it('introduces the easy facts before the hard ones', () => {

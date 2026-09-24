@@ -227,10 +227,19 @@ button {
 }
 
 .verdict.ready {
+  flex: none;
   background: var(--indigo);
 }
 
+.card.preview {
+  min-height: 0;
+  overflow-y: auto;
+  justify-content: flex-start;
+}
+
 .preview-facts {
+  margin: auto 0;
+  padding: 16px 0;
   display: grid;
   grid-template-columns: repeat(5, auto);
   align-items: baseline;
