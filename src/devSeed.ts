@@ -5,7 +5,7 @@ import { saveProgress } from './domain/storage'
 const SEED_FLAG = 'seed'
 const RAMP_STEPS = FACTORS.length - 2
 
-const rampedProgress = (): Progress => {
+export const rampedProgress = (): Progress => {
   const facts: Record<string, FactProgress> = {}
 
   FACTORS.forEach((left) => {

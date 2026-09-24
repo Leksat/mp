@@ -72,6 +72,13 @@ npm run dev
 npm test        # vitest, covers the whole learning algorithm
 npm run build
 npm run icons   # regenerates public/*.png from scripts/generate-icons.mjs
+npm run storybook        # http://localhost:6006
+npm run build-storybook  # static build into storybook-static/
 ```
 
-Pushing to `main` deploys to GitHub Pages.
+Stories sit next to their components as `*.stories.tsx`; shared fixtures and frames live in
+`src/stories/`. `src/pwa.ts` is replaced by `src/__mocks__/pwa.ts` in Storybook, and the App stories
+seed `localStorage` before rendering.
+
+Pushing to `main` deploys to GitHub Pages, unless the push only touches Storybook files or
+markdown. The deploy can also be run by hand from the Actions tab.
