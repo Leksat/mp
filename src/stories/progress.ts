@@ -1,5 +1,6 @@
 import { ALL_FACTS, INTRODUCTION_ORDER, baseRequiredStreak, factKey, toFact, type Fact } from '../domain/facts'
 import type { Progress } from '../domain/progress'
+import { previewFacts } from '../domain/selection'
 
 export { rampedProgress } from '../devSeed'
 
@@ -48,7 +49,4 @@ export const oneFactLeftProgress: Progress = progressWithStreaks(
 
 export const completeProgress: Progress = progressWithStreaks(learned(ALL_FACTS), true)
 
-export const inProgressFacts: readonly Fact[] = INTRODUCTION_ORDER.slice(
-  LEARNED_MIDWAY,
-  LEARNED_MIDWAY + IN_PROGRESS,
-)
+export const inProgressFacts: readonly Fact[] = previewFacts(midwayProgress)

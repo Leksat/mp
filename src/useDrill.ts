@@ -1,8 +1,7 @@
 import { useState, type Dispatch, type SetStateAction } from 'react'
-import { ALL_FACTS, factKey, type Fact } from './domain/facts'
+import { ALL_FACTS, type Fact } from './domain/facts'
 import { isLearned, recordAnswer, type Progress } from './domain/progress'
-import { COOLDOWN_CARDS, pickFact, workingSet } from './domain/selection'
-import { shuffled } from './domain/shuffle'
+import { COOLDOWN_CARDS, pickFact, previewFacts } from './domain/selection'
 
 export interface Card {
   readonly id: number
@@ -13,13 +12,6 @@ const nextCard = (progress: Progress, recent: readonly Fact[], id: number): Card
   id,
   fact: pickFact(progress, recent),
 })
-
-const shuffledFacts = (): readonly Fact[] => shuffled(ALL_FACTS, Math.random)
-
-const previewFacts = (progress: Progress, order: readonly Fact[]): readonly Fact[] => {
-  const inPlay = new Set(workingSet(progress).map(factKey))
-  return order.filter((fact) => inPlay.has(factKey(fact)))
-}
 
 export interface PreviewDrill {
   readonly phase: 'preview'
@@ -47,7 +39,6 @@ export const useDrill = (
   const [card, setCard] = useState<Card>(() => nextCard(progress, [], 0))
   const [answered, setAnswered] = useState(0)
   const [previewing, setPreviewing] = useState(true)
-  const [order, setOrder] = useState(shuffledFacts)
 
   const answer = (knew: boolean) => {
     const updated = recordAnswer(progress, card.fact, knew)
@@ -62,12 +53,11 @@ export const useDrill = (
 
     if (done) {
       setPreviewing(true)
-      setOrder(shuffledFacts())
       onSessionDone()
     }
   }
 
-  const facts = previewFacts(progress, order)
+  const facts = previewFacts(progress)
   if (previewing && facts.length > 0) {
     return { phase: 'preview', facts, start: () => setPreviewing(false) }
   }

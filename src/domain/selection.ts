@@ -1,4 +1,4 @@
-import { ALL_FACTS, areConfusable, factKey, INTRODUCTION_ORDER, type Fact } from './facts'
+import { ALL_FACTS, areConfusable, factKey, INTRODUCTION_ORDER, product, type Fact } from './facts'
 import { factProgress, factState, type FactState, type Progress } from './progress'
 
 export const COOLDOWN_CARDS = 5
@@ -40,6 +40,11 @@ const inState = (progress: Progress, state: FactState): readonly Fact[] =>
 
 export const workingSet = (progress: Progress): readonly Fact[] =>
   [...inState(progress, 'learning'), ...inState(progress, 'untouched')].slice(0, WORKING_SET)
+
+export const previewFacts = (progress: Progress): readonly Fact[] =>
+  [...workingSet(progress)].sort(
+    (one, other) => product(one) - product(other) || one.left - other.left,
+  )
 
 const withoutRecent = (facts: readonly Fact[], recent: readonly Fact[]): readonly Fact[] =>
   facts.filter((fact) => !recent.some((seen) => factKey(seen) === factKey(fact)))

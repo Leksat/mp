@@ -9,7 +9,7 @@ import {
   type FactProgress,
   type Progress,
 } from './progress'
-import { COOLDOWN_CARDS, pickFact, workingSet } from './selection'
+import { COOLDOWN_CARDS, pickFact, previewFacts, workingSet } from './selection'
 
 const drill = (cards: number, knew: (fact: Fact) => boolean) => {
   let progress = emptyProgress()
@@ -145,6 +145,32 @@ describe('picking the next card', () => {
       for (let rep = 0; rep < 8; rep++) progress = recordAnswer(progress, fact, true)
     }
     expect(pickFact(progress, [])).toBeDefined()
+  })
+})
+
+describe('the preview', () => {
+  it('lists the working set by product, twins side by side, smaller left factor first', () => {
+    const started = { streak: 1, misses: 0, lastSeenTick: 0, lastMissedTick: null }
+    const progress: Progress = {
+      tick: 5,
+      facts: Object.fromEntries(
+        [toFact(8, 7), toFact(7, 7), toFact(3, 4), toFact(7, 8), toFact(6, 8)].map((fact) => [
+          factKey(fact),
+          started,
+        ]),
+      ),
+      celebrated: false,
+    }
+
+    expect(previewFacts(progress).map(factKey)).toEqual([
+      '1x1',
+      '1x2',
+      '3x4',
+      '6x8',
+      '7x7',
+      '7x8',
+      '8x7',
+    ])
   })
 })
 
