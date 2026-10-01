@@ -9,15 +9,24 @@ import {
   type FactProgress,
   type Progress,
 } from './progress'
-import { COOLDOWN_CARDS, pickFact, previewFacts, workingSet } from './selection'
+import {
+  beyondWorkingSet,
+  COOLDOWN_CARDS,
+  pickFact,
+  pickFromWorkingSet,
+  previewFacts,
+  workingSet,
+} from './selection'
 
-const drill = (cards: number, knew: (fact: Fact) => boolean) => {
+type Picker = (progress: Progress, recent: readonly Fact[], random: () => number) => Fact
+
+const drill = (cards: number, knew: (fact: Fact) => boolean, pick: Picker = pickFact) => {
   let progress = emptyProgress()
   let recent: Fact[] = []
   const seen: Fact[] = []
 
   for (let card = 0; card < cards; card++) {
-    const fact = pickFact(progress, recent)
+    const fact = pick(progress, recent, Math.random)
     seen.push(fact)
     progress = recordAnswer(progress, fact, knew(fact))
     recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
@@ -27,6 +36,11 @@ const drill = (cards: number, knew: (fact: Fact) => boolean) => {
 }
 
 const always = () => true
+
+const wanderingTo = (draw: number) => {
+  const draws = [0.99, draw]
+  return () => draws.shift() ?? draw
+}
 
 describe('picking the next card', () => {
   it('never repeats a fact within the cooldown', () => {
@@ -55,7 +69,7 @@ describe('picking the next card', () => {
   })
 
   it('holds the working set to a handful of facts at a time', () => {
-    const { progress } = drill(200, (fact) => fact.left + fact.right < 8)
+    const { progress } = drill(200, (fact) => fact.left + fact.right < 8, pickFromWorkingSet)
     const started = ALL_FACTS.filter((fact) => factState(progress, fact) === 'learning')
     expect(started.length).toBeLessThanOrEqual(7)
   })
@@ -77,7 +91,7 @@ describe('picking the next card', () => {
     expect(inPlay.every((fact) => baseRequiredStreak(fact) === 2)).toBe(true)
   })
 
-  it('serves only the working set', () => {
+  it('serves only the working set from its focused half', () => {
     const progress: Progress = {
       tick: 1,
       celebrated: false,
@@ -89,14 +103,14 @@ describe('picking the next card', () => {
     let recent: Fact[] = []
 
     for (let card = 0; card < 50; card++) {
-      const fact = pickFact(progress, recent)
+      const fact = pickFromWorkingSet(progress, recent, Math.random)
       expect(inPlay).toContain(factKey(fact))
       recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
     }
   })
 
   it('introduces the easy facts before the hard ones', () => {
-    const { seen } = drill(20, always)
+    const { seen } = drill(20, always, pickFromWorkingSet)
     expect(seen.every((fact) => baseRequiredStreak(fact) === 1)).toBe(true)
   })
 
@@ -145,6 +159,83 @@ describe('picking the next card', () => {
       for (let rep = 0; rep < 8; rep++) progress = recordAnswer(progress, fact, true)
     }
     expect(pickFact(progress, [])).toBeDefined()
+  })
+})
+
+describe('the random half', () => {
+  const focused = () => 0
+  const wandering = () => 0.99
+
+  it('serves the working set when the coin says so', () => {
+    const progress = emptyProgress()
+    const inPlay = workingSet(progress).map(factKey)
+    expect(inPlay).toContain(factKey(pickFact(progress, [], focused)))
+  })
+
+  it('otherwise serves an unlearned fact beyond the working set', () => {
+    let progress = emptyProgress()
+    let recent: Fact[] = []
+
+    for (let card = 0; card < 30; card++) {
+      const fact = pickFact(progress, recent, wandering)
+      expect(beyondWorkingSet(progress).map(factKey)).toContain(factKey(fact))
+      progress = recordAnswer(progress, fact, card % 3 !== 0)
+      recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
+    }
+  })
+
+  it('draws evenly from everything beyond the working set', () => {
+    const progress = emptyProgress()
+    const beyond = beyondWorkingSet(progress)
+    const drawn = new Set(
+      beyond.map((_, index) => factKey(pickFact(progress, [], wanderingTo((index + 0.5) / beyond.length)))),
+    )
+    expect(drawn.size).toBe(beyond.length)
+  })
+
+  it('keeps clear of recent and confusable cards', () => {
+    const recent = [toFact(7, 8), toFact(6, 6), toFact(3, 9)]
+    for (let index = 0; index < 50; index++) {
+      const fact = pickFact(emptyProgress(), recent, wanderingTo((index + 0.5) / 50))
+      expect(recent.map(factKey)).not.toContain(factKey(fact))
+      expect(recent.slice(0, 2).some((seen) => areConfusable(seen, fact))).toBe(false)
+    }
+  })
+
+  it('falls back to the working set once nothing is left beyond it', () => {
+    const learned = { streak: 9, lastSeenTick: 0, lastMissedTick: null }
+    const unlearned = [toFact(3, 4), toFact(6, 8), toFact(7, 7)].map(factKey)
+    const progress: Progress = {
+      tick: 10,
+      celebrated: false,
+      facts: Object.fromEntries(
+        ALL_FACTS.filter((fact) => !unlearned.includes(factKey(fact))).map((fact) => [
+          factKey(fact),
+          learned,
+        ]),
+      ),
+    }
+
+    expect(beyondWorkingSet(progress)).toHaveLength(0)
+    expect(unlearned).toContain(factKey(pickFact(progress, [], wandering)))
+  })
+
+  it('takes about half of the cards', () => {
+    let progress = emptyProgress()
+    let recent: Fact[] = []
+    let beyond = 0
+    const cards = 2000
+
+    for (let card = 0; card < cards; card++) {
+      const outside = beyondWorkingSet(progress).map(factKey)
+      const fact = pickFact(progress, recent)
+      if (outside.includes(factKey(fact))) beyond++
+      progress = recordAnswer(progress, fact, false)
+      recent = [fact, ...recent].slice(0, COOLDOWN_CARDS)
+    }
+
+    expect(beyond / cards).toBeGreaterThan(0.4)
+    expect(beyond / cards).toBeLessThan(0.6)
   })
 })
 

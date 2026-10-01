@@ -31,16 +31,22 @@ The number of ✓ a fact needs is not the same for every fact.
 - `7 × 8` and `8 × 7` are wholly separate. Answering one never moves the other.
 - Green means never again. A learned fact is never served while any fact is still unlearned;
   only a ✗ can bring it back, and only the kid can cause that. There are no spaced reviews.
-- At most 7 facts are in progress at a time; the rest stay untouched until a slot frees up. New
-  facts are introduced easiest first. Started facts fill the slots before new ones, easiest first,
-  so progress carried over from older versions with more facts started still yields 7.
-- Card selection is weighted: recently missed facts come back sooner, no fact repeats within 5
-  cards, and confusable facts (sharing a factor other than 1 or 10, or with products within 2)
-  stay apart within 2 cards. The cooldown shrinks if fewer facts are left in play than it blocks.
+- The working set holds at most 7 facts. New facts join it easiest first. Started facts fill the
+  slots before new ones, easiest first, so progress carried over from older versions with more
+  facts started still yields 7.
+- Each card flips a coin. Half the time it comes from the working set, weighted: recently missed
+  facts come back sooner. The other half it is drawn uniformly from the unlearned facts beyond the
+  working set, so the kid meets the whole table early. A fact touched that way counts as started
+  and competes for a slot. If nothing beyond the working set is eligible, the card comes from the
+  working set.
+- Either way, no fact repeats within 5 cards, and confusable facts (sharing a factor other than 1
+  or 10, or with products within 2) stay apart within 2 cards. In the working set the cooldown
+  shrinks if fewer facts are left in play than it blocks.
 - Every session opens with a preview: the facts currently in progress, with answers, and a ▶
   button to start. They are listed by product, smaller left factor first on a tie, so twins sit
   side by side and near-miss products sit next to each other. Nothing about selection changes — new facts can still join
-  mid-session as slots free up. The preview is skipped when nothing is in progress.
+  mid-session as slots free up, and the random half serves facts the preview never showed. The
+  preview is skipped when nothing is in progress.
 - A session is a fixed number of cards, 20 by default, and ends early the moment the last fact
   turns green — no round is ever padded with facts the kid already knows. A bar on the far edge
   from the ✓ / ✗ buttons fills with every answer, ✓ or ✗ alike. The last answer of a session
