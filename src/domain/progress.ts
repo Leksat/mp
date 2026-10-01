@@ -1,4 +1,4 @@
-import { ALL_FACTS, baseRequiredStreak, factKey, parseFactKey, type Fact } from './facts'
+import { ALL_FACTS, baseRequiredStreak, factKey, isRuleFact, parseFactKey, type Fact } from './facts'
 
 const MISS_PENALTY_SHARE = 3
 
@@ -88,6 +88,25 @@ export const forgetFact = (progress: Progress, fact: Fact): Progress => {
   const { [factKey(fact)]: _removed, ...rest } = progress.facts
   return { ...progress, facts: rest, celebrated: false }
 }
+
+const learned = (previous: FactProgress | undefined, fact: Fact): FactProgress => ({
+  streak: baseRequiredStreak(fact),
+  lastSeenTick: previous?.lastSeenTick ?? 0,
+  lastMissedTick: previous?.lastMissedTick ?? null,
+})
+
+export const learnRuleFacts = (progress: Progress): Progress => ({
+  ...progress,
+  facts: {
+    ...progress.facts,
+    ...Object.fromEntries(
+      ALL_FACTS.filter(isRuleFact).map((fact) => [
+        factKey(fact),
+        learned(progress.facts[factKey(fact)], fact),
+      ]),
+    ),
+  },
+})
 
 export const withCelebrated = (progress: Progress): Progress => ({ ...progress, celebrated: true })
 

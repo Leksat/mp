@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { ALL_FACTS, baseRequiredStreak, toFact } from './facts'
+import { ALL_FACTS, baseRequiredStreak, isRuleFact, toFact } from './facts'
 import {
   emptyProgress,
   factState,
   factStreak,
   fromLegacy,
   learnedPercent,
+  learnRuleFacts,
   recordAnswer,
   requiredStreak,
   type Progress,
@@ -126,6 +127,36 @@ describe('the score', () => {
     const missed = answerTimes(learned, fact, 3, false)
     const relearned = answerTimes(missed, fact, 8, true)
     expect(learnedPercent(relearned)).toBe(learnedPercent(learned))
+  })
+})
+
+describe('marking ×1 and ×10 as learned', () => {
+  it('turns every rule fact green, both ways round', () => {
+    const progress = learnRuleFacts(emptyProgress())
+    expect(ALL_FACTS.filter(isRuleFact)).toHaveLength(36)
+    for (const fact of ALL_FACTS.filter(isRuleFact)) {
+      expect(factState(progress, fact)).toBe('learned')
+    }
+  })
+
+  it('leaves every other fact alone', () => {
+    const fact = toFact(7, 8)
+    const before = answerTimes(emptyProgress(), fact, 2, true)
+    const after = learnRuleFacts(before)
+    expect(factStreak(after, fact)).toBe(2)
+    expect(factState(after, toFact(3, 4))).toBe('untouched')
+  })
+
+  it('keeps when a rule fact was last seen and missed', () => {
+    const fact = toFact(1, 6)
+    const missed = recordAnswer(emptyProgress(), fact, false)
+    const after = learnRuleFacts(missed)
+    expect(after.facts['1x6']).toEqual({ ...missed.facts['1x6'], streak: 1 })
+  })
+
+  it('changes nothing the second time', () => {
+    const once = learnRuleFacts(recordAnswer(emptyProgress(), toFact(4, 6), true))
+    expect(learnRuleFacts(once)).toEqual(once)
   })
 })
 

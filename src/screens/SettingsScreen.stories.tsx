@@ -19,6 +19,7 @@ const meta = {
     updateReady: false,
     onChange: fn(),
     onClearProgress: fn(),
+    onLearnRuleFacts: fn(),
     onUpdate: fn(),
   },
 } satisfies Meta<typeof SettingsScreen>
@@ -42,5 +43,11 @@ export const UpdateReady: Story = {
 export const ConfirmingClear: Story = {
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'clear progress' }))
+  },
+}
+
+export const ConfirmingLearnRuleFacts: Story = {
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'mark ×1 and ×10 learned' }))
   },
 }

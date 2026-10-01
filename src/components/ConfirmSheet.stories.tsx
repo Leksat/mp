@@ -7,6 +7,7 @@ const meta = {
   component: ConfirmSheet,
   args: {
     title: 'Clear all progress?',
+    tone: 'danger',
     onConfirm: fn(),
     onCancel: fn(),
   },
@@ -17,3 +18,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const ClearProgress: Story = {}
+
+export const LearnRuleFacts: Story = {
+  args: { title: 'Mark ×1 and ×10 as learned?', tone: 'learned' },
+}

@@ -55,8 +55,9 @@ The number of ✓ a fact needs is not the same for every fact.
   streak's share of that fact's own requirement, so every reachable streak has its own colour. Tap
   a cell to see its streak or reset it.
 - The settings screen moves the ✓ / ✗ buttons above or below the card, sets the session length
-  and the auto-reveal delay in whole seconds with steppers (minimum 1, no maximum), and clears all
-  progress after a confirmation.
+  and the auto-reveal delay in whole seconds with steppers (minimum 1, no maximum). Two actions
+  need a confirmation: marking every `×1` and `×10` fact learned (all 36, both ways round,
+  nothing else touched), and clearing all progress.
 
 Progress and settings live in `localStorage` and are written on every change.
 

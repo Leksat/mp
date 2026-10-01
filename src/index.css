@@ -386,6 +386,11 @@ button {
   color: #ffffff;
 }
 
+.sheet-action.learned {
+  background: var(--streak-full);
+  color: #ffffff;
+}
+
 .settings-screen {
   flex: 1;
   display: flex;
@@ -474,6 +479,17 @@ button {
 .build-id {
   font-size: 0.8rem;
   color: var(--muted);
+}
+
+.learn-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 52px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--streak-full) 18%, transparent);
+  color: var(--streak-full);
 }
 
 .danger-action {

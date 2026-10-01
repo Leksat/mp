@@ -119,3 +119,10 @@ export const ResetIcon = ({ size }: IconProps) => (
   </Svg>
 )
 
+export const RulesLearnedIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <rect x="6.5" y="6.5" width="11" height="11" rx="0.5" />
+    <path d="M9.5 12.2l1.8 1.8 3.2-3.6" />
+  </Svg>
+)

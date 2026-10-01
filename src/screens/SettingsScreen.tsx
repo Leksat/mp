@@ -6,6 +6,7 @@ import {
   DownloadIcon,
   LayoutBottomIcon,
   LayoutTopIcon,
+  RulesLearnedIcon,
   TimerIcon,
   TrashIcon,
 } from '../components/icons'
@@ -28,17 +29,21 @@ interface SettingsScreenProps {
   readonly updateReady: boolean
   onChange(settings: Settings): void
   onClearProgress(): void
+  onLearnRuleFacts(): void
   onUpdate(): void
 }
+
+type Confirming = 'clear' | 'learn-rules' | null
 
 export const SettingsScreen = ({
   settings,
   updateReady,
   onChange,
   onClearProgress,
+  onLearnRuleFacts,
   onUpdate,
 }: SettingsScreenProps) => {
-  const [confirmingClear, setConfirmingClear] = useState(false)
+  const [confirming, setConfirming] = useState<Confirming>(null)
 
   return (
     <div className="settings-screen">
@@ -92,8 +97,17 @@ export const SettingsScreen = ({
 
           <button
             type="button"
+            className="learn-action"
+            onClick={() => setConfirming('learn-rules')}
+            aria-label="mark ×1 and ×10 learned"
+          >
+            <RulesLearnedIcon size={26} />
+          </button>
+
+          <button
+            type="button"
             className="danger-action"
-            onClick={() => setConfirmingClear(true)}
+            onClick={() => setConfirming('clear')}
             aria-label="clear progress"
           >
             <TrashIcon size={26} />
@@ -103,14 +117,27 @@ export const SettingsScreen = ({
         <div className="build-id">{BUILD_TIME}</div>
       </div>
 
-      {confirmingClear && (
+      {confirming === 'learn-rules' && (
+        <ConfirmSheet
+          title="Mark ×1 and ×10 as learned?"
+          tone="learned"
+          onConfirm={() => {
+            onLearnRuleFacts()
+            setConfirming(null)
+          }}
+          onCancel={() => setConfirming(null)}
+        />
+      )}
+
+      {confirming === 'clear' && (
         <ConfirmSheet
           title="Clear all progress?"
+          tone="danger"
           onConfirm={() => {
             onClearProgress()
-            setConfirmingClear(false)
+            setConfirming(null)
           }}
-          onCancel={() => setConfirmingClear(false)}
+          onCancel={() => setConfirming(null)}
         />
       )}
     </div>

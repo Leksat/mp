@@ -4,7 +4,13 @@ import { Firework } from './components/Firework'
 import { RotateIcon } from './components/icons'
 import { TabBar, type Screen } from './components/TabBar'
 import { ALL_FACTS, type Fact } from './domain/facts'
-import { emptyProgress, forgetFact, learnedCount, withCelebrated } from './domain/progress'
+import {
+  emptyProgress,
+  forgetFact,
+  learnedCount,
+  learnRuleFacts,
+  withCelebrated,
+} from './domain/progress'
 import { loadProgress, loadSettings, saveProgress, saveSettings } from './domain/storage'
 import { installUpdate, isStandalone, useUpdateReady } from './pwa'
 import { CardScreen } from './screens/CardScreen'
@@ -41,6 +47,7 @@ export const App = () => {
   const stopCelebrating = useCallback(() => setProgress(withCelebrated), [])
   const onForget = (fact: Fact) => setProgress((current) => forgetFact(current, fact))
   const onClearProgress = () => setProgress(emptyProgress())
+  const onLearnRuleFacts = () => setProgress(learnRuleFacts)
 
   return (
     <div className="app">
@@ -67,6 +74,7 @@ export const App = () => {
             updateReady={updateReady}
             onChange={setSettings}
             onClearProgress={onClearProgress}
+            onLearnRuleFacts={onLearnRuleFacts}
             onUpdate={installUpdate}
           />
         )}
